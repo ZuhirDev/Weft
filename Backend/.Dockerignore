@@ -1,0 +1,38 @@
+# Ignorar archivos y directorios específicos de Laravel
+/node_modules
+/vendor
+/.env
+/.git
+/.github
+/.idea
+/.vscode
+/.env.local
+/.env.testing
+/tests
+/phpunit.xml
+/phpunit.xml.dist
+
+# Archivos de caché y logs de Laravel
+/storage/*
+!/storage/app
+!/storage/framework
+!/storage/logs
+/.phpunit.result.cache
+
+# Ignorar directorios temporales o de compilación
+/.docker
+/.env*.backup
+/.env*.*.backup
+/public/storage
+/.env
+
+# Ignorar archivos generados por Laravel y dependencias de desarrollo
+/composer.lock
+/package-lock.json
+/yarn.lock
+
+# Otros archivos que no deberían ser copiados al contenedor
+*.md
+*.log
+*.gitignore
+.gitmodules

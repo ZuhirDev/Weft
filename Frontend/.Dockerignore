@@ -1,0 +1,44 @@
+# Ignorar los archivos de dependencias de Node.js
+/node_modules
+
+# Ignorar archivos de configuración locales
+/.vscode
+/.idea
+/.env.local
+/.env.*.local
+
+# Ignorar archivos de configuración de control de versiones
+/.git
+/.gitignore
+
+# Ignorar archivos de lock de paquetes (si se instalan dentro del contenedor)
+/package-lock.json
+/yarn.lock
+
+# Ignorar directorios y archivos de construcción de Vite
+/dist
+/.cache
+/vite.config.js
+/vite.config.ts
+
+# Ignorar archivos de pruebas y resultados de test
+/tests
+/*.test.js
+/*.test.ts
+/*.test.jsx
+/*.test.tsx
+
+# Ignorar documentación y archivos de licencia
+*.md
+LICENSE
+README.md
+
+# Archivos temporales o de configuración innecesarios
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Ignorar archivos de configuraciones personales de IDE
+/.idea
+/.vscode

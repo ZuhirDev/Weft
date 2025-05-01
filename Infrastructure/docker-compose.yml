@@ -1,0 +1,58 @@
+services:
+  backend:
+    build: 
+      context: ${LARAVEL}
+      dockerfile: Dockerfile
+    container_name: ${CONTAINER_NAME_LARAVEL}
+    volumes:
+      - ${LARAVEL}/:/var/www/html
+    depends_on:
+      - db
+    networks:
+      - weft-network
+  frontend:
+    build: 
+      context: ${REACT}
+      dockerfile: Dockerfile
+    container_name: ${CONTAINER_NAME_REACT}
+    volumes:
+      - ${REACT}/:/app
+    depends_on:
+      - backend
+    networks:
+      - weft-network
+
+  nginx:
+    image: nginx:alpine
+    container_name: ${CONTAINER_NAME_NGINX}
+    ports:
+      - "83:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ${LARAVEL}/public:/var/www/html/public
+      - ${REACT}/dist:/var/www/frontend/dist
+    depends_on:
+      - backend
+      - frontend 
+    networks:
+      - weft-network
+  db:
+    image: mysql:8.0
+    container_name: ${MySQL_CONTAINER_NAME}
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD} 
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - weft-network
+    ports:
+      - "3307:3306"
+networks: 
+  weft-network:
+    driver: bridge
+volumes:
+  db_data:
+    driver: local
+
+
+  # ULTIMAR DETALLES COMO DOCKERIGNORE Y REPASAR TODO 
