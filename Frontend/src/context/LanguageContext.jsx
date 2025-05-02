@@ -44,7 +44,7 @@ export const LanguageProvider = ({ children }) => {
 
     }, []);
 
-    if(loading) return <div>loading...</div>;
+    if(loading) return <div>loading...</div>;  // utilizar un skelet
 
     const value = {
         language,

@@ -18,8 +18,6 @@ export const UserProvider = ({ children }) => {
     const forgotPassword = async (data) => {
         const response = await forgotPasswordService(data);
 
-        // PENDIENTE
-
     }
 
     const passwordReset = async (data) => {

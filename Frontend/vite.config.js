@@ -11,6 +11,7 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
       "@user": path.resolve(__dirname, "./src/modules/user"),
       "@auth": path.resolve(__dirname, "./src/modules/auth"),
+      "@error": path.resolve(__dirname, "./src/modules/error"),
     },
   },
 });

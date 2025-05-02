@@ -1,5 +1,5 @@
 import esFlag from '@/assets/flags/es.svg';
-import enFlag from '@/assets/flags/us.svg';
+import enFlag from '@/assets/flags/gb.svg';
 
 import enValidation from './locales/en/validation.json';
 import enCommon from './locales/en/en.json';

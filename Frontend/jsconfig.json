@@ -5,6 +5,7 @@
       "@/*": ["./src/*"],
       "@auth/*": ["./src/modules/auth/*"],
       "@user/*": ["./src/modules/user/*"],
+      "@error/*": ["./src/modules/error/*"],
     }
   }
 }

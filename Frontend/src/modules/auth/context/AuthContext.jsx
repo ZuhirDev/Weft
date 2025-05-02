@@ -8,14 +8,11 @@ export const AuthProvider = ({ children }) => {
     /** BUSCAR INFORMACION SOBRE HTTPS ONLY PARA MEJORAR LA SEGURIDAD */
 
     const [user, setUser ] = useState(null);
-    const [loading, setLoading] = useState(true); // se usa loading para cuando cargar no rediridir rapidamente
+    const [loading, setLoading] = useState(true); 
     const [needs2FA, setNeeds2FA] = useState(false);
 
     const isAuthenticated = !!user;
 
-    // el problama es que need2fa cuando se recarga la pagina se vuelve en false, 
-    // y eso no puede ser quiero que si el user hace login y need2fa se pone en true que no cambie aunque recargue la pagina 
-    // y el usuario haga lo que quiera
 
     /**
      * REVISAR NUEVOS CAMBIOS DE EMPLOYEE Y CUSTOMS ETC

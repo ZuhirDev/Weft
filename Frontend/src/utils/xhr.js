@@ -39,8 +39,6 @@ axios.interceptors.request.use(
 
 export const request = (config) => axios.request({ responseType: 'json', method: 'get', ...config });
 export const get = request;
-export const post = (config) => { console.log("configurasao", config)
-    return request({ ...config, method: 'post' })
-};
+export const post = (config) => request({ ...config, method: 'post' });
 export const put = (config) => request({ ...config, method: 'put' });
 export const del = (config) => request({ ...config, method: 'delete' });
