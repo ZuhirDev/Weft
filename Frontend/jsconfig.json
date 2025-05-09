@@ -6,6 +6,10 @@
       "@auth/*": ["./src/modules/auth/*"],
       "@user/*": ["./src/modules/user/*"],
       "@error/*": ["./src/modules/error/*"],
+      "@account/*": ["./src/modules/account/*"],
+      "@card/*": ["./src/modules/card/*"],
+      "@transaction/*": ["./src/modules/transaction/*"],
+      "@dashboard/*": ["./src/modules/dashboard/*"],
     }
   }
 }

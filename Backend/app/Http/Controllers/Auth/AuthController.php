@@ -6,10 +6,16 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\Facades\JWTAuth;
+
+use Tymon\JWTAuth\JWT;
+
 // use Illuminate\Http\Request;
+
+/** CUANDO EN LA SOLICITUD NO HAYA TOKEN PONER ALGUN MENSAJE DE TOKEN INVALIDAO */
 
 class AuthController extends Controller
 {
@@ -103,5 +109,22 @@ class AuthController extends Controller
             "message" => __('auth.user_info_retrieved'),
             "user" => $user,
         ], 200);
+    }
+
+    public function validatePassword(Request $request)
+    {
+        $user = JWTAuth::user();
+
+        if(!Hash::check($request->password, $user->password)){
+            return response()->json([
+                'message' => 'Contraseña incorrecta',
+            ], 401);
+        }
+
+        
+        return response()->json([
+            'message' => 'Contraseña válida',
+        ], 200);
+
     }
 }

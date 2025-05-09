@@ -7,7 +7,8 @@ use App\Models\Card;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Faker\Factory as Faker;
-
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Hash;
 
 class CardSeeder extends Seeder
 {
@@ -26,6 +27,7 @@ class CardSeeder extends Seeder
                 'expiration_date' => $faker->creditCardExpirationDateString(),
                 'status' => 'active',
                 'type' => $faker->randomElement(['debit', 'credit']),
+                'pin' => Crypt::encryptString($faker->numberBetween(1000, 9999)),
             ]);
         });
     }

@@ -12,6 +12,10 @@ export default defineConfig({
       "@user": path.resolve(__dirname, "./src/modules/user"),
       "@auth": path.resolve(__dirname, "./src/modules/auth"),
       "@error": path.resolve(__dirname, "./src/modules/error"),
+      "@account": path.resolve(__dirname, "./src/modules/account"),
+      "@card": path.resolve(__dirname, "./src/modules/card"),
+      "@transaction": path.resolve(__dirname, "./src/modules/transaction"),
+      "@dashboard": path.resolve(__dirname, "./src/modules/dashboard"),
     },
   },
 });

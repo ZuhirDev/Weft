@@ -8,9 +8,6 @@ import { useAuth } from '@auth/context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
-
-/** mostrar los mensajes en los demas forms tambien revisar que no haya conflictos con los de passwor y root */
-
 const LoginPage = () => {
 
     
@@ -36,7 +33,7 @@ const LoginPage = () => {
             const response = await login(data);
             console.log("response login", response);
             reset();
-            navigate('/');
+            navigate('/dashboard');
         } catch (error) {
 
             const { errors: responseErrors, message: generalMessage } = error.response?.data;

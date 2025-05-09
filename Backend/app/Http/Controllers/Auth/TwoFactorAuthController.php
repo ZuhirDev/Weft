@@ -99,13 +99,13 @@ class TwoFactorAuthController extends Controller
     {
         $user = Auth::user();
 
-        if(!$user->google2fa_secret) return response()->json(['message' => __('auth.2fa.already_disabled')]); // 2FA ya está deshabilitado
+        if(!$user->google2fa_secret) return response()->json(['message' => __('auth.2fa.already_disabled')], 422); // 2FA ya está deshabilitado
 
         User::find($user->id)->update([
             'google2fa_secret' => null,
             'google2fa_enabled' => false,
         ]);
 
-        return response()->json(['message' => __('auth.2fa.disabled_successfully')]);
+        return response()->json(['message' => __('auth.2fa.disabled_successfully')], 200);
     }
 }

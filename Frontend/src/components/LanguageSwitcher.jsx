@@ -22,8 +22,8 @@ const LanguageSwitcher = () => {
         <SelectTrigger>
           {currentLang ? (
             <div className="flex items-center gap-2">
-              <img src={currentLang.icon} className="w-5 h-5" />
-              {currentLang.label}
+              <img src={currentLang.icon} className="w-5 h-5 rounded-full" />
+              {/* {currentLang.label} */}
             </div>
           ) : (
             'Selecciona un idioma'
@@ -41,7 +41,7 @@ const LanguageSwitcher = () => {
                     <img
                       src={langConfig.icon}
                       alt={lang}
-                      className="w-5 h-5 rounded-sm"
+                      className="w-5 h-5 rounded-full"
                     />
                     {langConfig.label}
                   </div>

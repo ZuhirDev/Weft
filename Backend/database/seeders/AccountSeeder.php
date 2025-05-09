@@ -4,8 +4,6 @@ namespace Database\Seeders;
 
 use App\Models\Account;
 use App\Models\Customer;
-use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Faker\Factory as Faker;
 
@@ -23,7 +21,7 @@ class AccountSeeder extends Seeder
         Customer::all()->each(function ($customer) use ( $faker){
             Account::create([
                 'customer_id' => $customer->id, 
-                'IBAN' => $faker->iban('ES'),
+                'iban' => $faker->iban('ES'),
                 'swift' => $faker->swiftBicNumber(),
                 'status' => 'active',
             ]);

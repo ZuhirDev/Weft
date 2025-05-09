@@ -22,9 +22,10 @@ class Verify2FA
             return response()->json([
                 'message' => __('auth.2fa.two_factor_authentication_required'),
                 '2fa' => true,
-            ]);           
+            ]);
         }
 
+        dd($user);
         return $next($request);
     }
 }

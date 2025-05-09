@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('account_id')->constrained('accounts')->onDelete('cascade');
 
+            $table->string('alias')->nullable();
+            $table->string('pin');
             $table->string('card_number', 16)->unique();
             $table->string('cvv', 3);
             $table->date('expiration_date');

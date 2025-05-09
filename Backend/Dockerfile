@@ -1,7 +1,7 @@
 # Usar la imagen oficial de PHP con FPM
 FROM php:8.3-fpm
 
-# Instalar dependencias necesarias para Laravel
+# Dependencias necesarias para Laravel
 RUN apt-get update && apt-get install -y \
     libpng-dev \
     libjpeg62-turbo-dev \
@@ -19,21 +19,19 @@ RUN apt-get update && apt-get install -y \
 
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
-#CREAR USUARIO PARA EVITAR PROBLEMAS DE PERMISOS DENTRO DEL CONTENEDOR
-# Crear el usuario con el mismo UID y GID que fuera del contenedor ["id"]
+# CREAR USUARIO PARA EVITAR PROBLEMAS DE PERMISOS DENTRO DEL CONTENEDOR
 RUN groupadd -g 1000 zelh392 && \
     useradd -u 1000 -g zelh392 -m zelh392
 
 # Instalar Composer 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-
  
 # Definir el directorio de trabajo
 WORKDIR /var/www/html
 
 USER zelh392
 
-# Comando para iniciar PHP-FPM (más adecuado para producción)
+# Comando para iniciar PHP-FPM
 CMD ["php-fpm"]
 
 # para poststgres

@@ -11,23 +11,32 @@ class Transaction extends Model
     use SoftDeletes, HasFactory;
 
     protected $fillable = [
-        'origin_account_id', 
-        'destination_account_id', 
-        'card_id', 
-        'transaction_id', 
-        'amount', 
-        'status', 
-        'concept',
+        'origin_account_id',
+        'destination_account_id',
+        'external_destination_iban',
+        'card_id',
+        'reference',
+        'amount',
+        'status',
+        'type',
+        'concept'
     ];
+
 
     protected $casts = [
         'amount' => 'decimal:2',
     ];
 
-    public function account()
+    public function originAccount()
     {
-        return $this->belongsTo(Account::class);
+        return $this->belongsTo(Account::class, 'origin_account_id');
     }
+    
+    public function destinationAccount()
+    {
+        return $this->belongsTo(Account::class, 'destination_account_id');
+    }
+    
 
     public function card()
     {

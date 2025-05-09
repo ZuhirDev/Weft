@@ -6,6 +6,7 @@ import Enable2FA from '@auth/components/2FA/Enable2FA';
 import Disable2FA from '@auth/components/2FA/Disable2FA';
 import AUTH_ROUTES from '@auth/routes/paths';
 import SendVerifyEmail from '@user/components/mails/SendVerifyEmail';
+import PasswordVerification from '@/modules/auth/components/PasswordVerification';
 
 
 /** SE ESTAN HACIENDO SOLICUTUDES CUANDO SE RECARGA, MAL INTENTAR RECUPERAR Y YA LUEGO SOLICITAR */
@@ -84,6 +85,7 @@ if (loading) {
       <Enable2FA />
       <Disable2FA />
       <SendVerifyEmail />
+      <PasswordVerification text={"Submit"} />
     </div>
   );
 };

@@ -13,7 +13,6 @@ import { useTranslation } from 'react-i18next';
 const HomePage = () => {
 
   const { isAuthenticated } = useAuth();
-  // const { t }= useTranslation();
   const { t }= useTranslation();
 
   return (
@@ -27,7 +26,7 @@ const HomePage = () => {
             <>
             <Link to={USER_ROUTES.UPDATE_PASSWORD} className="text-gray-700 hover:text-blue-600">update</Link>
               <Link to={USER_ROUTES.ME} className="text-gray-700 hover:text-blue-600">Me</Link>
-              <Logout />
+              {/* <Logout /> */}
             </>
           ) : (
             <>
@@ -39,7 +38,7 @@ const HomePage = () => {
             </>
           )
         }
-        <LanguageSwitcher />
+        {/* <LanguageSwitcher /> */}
         </nav>
       </header>
 

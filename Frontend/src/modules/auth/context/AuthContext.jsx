@@ -1,11 +1,12 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { disable2FAService, enable2FAService, loginService, logoutService, registerService, verify2FAService } from "@auth/services/authService";
+import { disable2FAService, enable2FAService, loginService, logoutService, passwordVerificationService, registerService, verify2FAService } from "@auth/services/authService";
 
 const AuthContext = createContext();
  
 export const AuthProvider = ({ children }) => { 
 
     /** BUSCAR INFORMACION SOBRE HTTPS ONLY PARA MEJORAR LA SEGURIDAD */
+    /** UTILIZAR CUSTOM HOOK PARA LOS EFFECTS */
 
     const [user, setUser ] = useState(null);
     const [loading, setLoading] = useState(true); 
@@ -42,9 +43,6 @@ export const AuthProvider = ({ children }) => {
     const login = async (data) => {
         try {
             const response = await loginService(data);
-            // return response.data  
-            console.log("response login", response)
-
             if(response.status === 403 && response.token){
                 setNeeds2FA(true);
                 sessionStorage.setItem('2fa_enabled', true);
@@ -56,8 +54,6 @@ export const AuthProvider = ({ children }) => {
         } catch (error) {
             throw error;
         }
-
-
     }
 
     const logout = async () => {
@@ -94,9 +90,18 @@ export const AuthProvider = ({ children }) => {
 
     const disable2FA = async () => {
         const response = await disable2FAService();
-        console.log("response disable", response)
         sessionStorage.removeItem('2fa_enabled');
         setNeeds2FA(false);
+    }
+
+    const passwordVerification = async (data) => {
+        try {
+            const response = await passwordVerificationService(data);
+
+            return response;
+        } catch (error) {
+            throw error;
+        }
     }
 
     const value = {
@@ -110,6 +115,7 @@ export const AuthProvider = ({ children }) => {
         needs2FA,
         setNeeds2FA,
         disable2FA,
+        passwordVerification,
         loading,
     }
 

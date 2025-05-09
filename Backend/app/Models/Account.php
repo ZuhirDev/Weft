@@ -12,10 +12,11 @@ class Account extends Model
 
     protected $fillable = [
         'customer_id', 
-        'IBAN',
+        'iban',
         'balance',
         'swift',
-        'status',
+        'status', // evitar operaciones si no esta activada
+        'type',
     ];
 
     protected $casts = [
@@ -32,13 +33,34 @@ class Account extends Model
         return $this->belongsTo(Employee::class);
     }
 
-    public function card()
+    public function cards()
     {
         return $this->hasMany(Card::class);
     }
 
-    public function transaction()
+    public function incomingTransactions()
     {
-        return $this->hasMany(Transaction::class);
+        return $this->hasMany(Transaction::class, 'destination_account_id');
+    }
+    
+    public function outgoingTransactions()
+    {
+        return $this->hasMany(Transaction::class, 'origin_account_id');
+    }
+    
+
+    public static function getSwiftCode()
+    {
+        return 'WEFTESMMXXX';
+    } 
+
+    public function scopeTable($query)
+    {
+        return $query;
+    }
+
+    public function isActive()
+    {
+        return $this->status === 'active';
     }
 }

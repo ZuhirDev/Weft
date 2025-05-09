@@ -20,17 +20,17 @@ class TransactionSeeder extends Seeder
         $faker = Faker::create();
 
         Account::all()->each(function($account) use ($faker){
-            $destinationAccount = Account::where('IBAN', '!=', $account->IBAN)->inRandomOrder()->first();
+            $destinationAccount = Account::where('iban', '!=', $account->iban)->inRandomOrder()->first();
 
             Transaction::create([
-                'origin_account_id' => $account->IBAN,
-                'destination_account_id' => $destinationAccount->IBAN, 
+                'origin_account_id' => $account->id,
+                'destination_account_id' => $destinationAccount->id, 
                 'card_id' => null,
-                'transaction_id' => Str::uuid()->toString(),
+                'reference' => Str::uuid()->toString(),
                 'amount' => $faker->randomFloat(2, 10, 1000),
                 'status' => $faker->randomElement(['completed', 'pending', 'failed']),
                 'concept' => $faker->sentence(),
-                ]);        
+            ]);        
         });
     }
 }

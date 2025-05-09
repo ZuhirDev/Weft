@@ -8,15 +8,20 @@ import { useAuth } from '@auth/context/AuthContext';
 import { QRCodeSVG } from 'qrcode.react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useTranslation } from 'react-i18next';
+import PasswordVerification from '../PasswordVerification';
+import useModal from '@/hooks/useModal';
 
 const Enable2FA = () => {
 
     const { t } = useTranslation();
+    const { isOpen, open, close } = useModal();
     const { enable2FA, setNeeds2FA } = useAuth();
     const [qrCodeURL, setQrCodeURL] = useState(null);
     const [secret, setSecret] = useState(null);
     const [copied, setCopied] = useState(false);
     const [isEnabled, setIsEnabled] = useState(false);
+
+    console.log("enabled", isEnabled) 
 
     const handleCopy = async () => {
         try {
@@ -30,6 +35,7 @@ const Enable2FA = () => {
 
     const handleEnable2FA = async () => {
         try {
+            close();
             const response = await enable2FA();
             console.log("response en enablepage", response);
             
@@ -44,16 +50,16 @@ const Enable2FA = () => {
     const handleClose = () => {
         setNeeds2FA(true);
         sessionStorage.setItem('2fa_enabled', true);
+        setIsEnabled(false); 
     };
 
     return (
         <>
-            <Dialog>
-                <DialogTrigger asChild>
-                    <Button onClick={handleEnable2FA} variant="outline">
+
+            <Button onClick={open} variant="outline">
                         {t('auth:enable_2fa')}                    
                     </Button>
-                </DialogTrigger>
+            <Dialog open={isEnabled}>
 
                 <DialogContent className="sm:max-w-md">
                     <DialogHeader>
@@ -84,6 +90,12 @@ const Enable2FA = () => {
                                     <Button type="button" onClick={handleCopy} size="sm" className="px-3">
                                         <span className="sr-only">Copy</span>
                                         <Copy />
+
+                                        {/* {copiedField === "iban" ? (  IMPLEMENTAR Y QUITA COPIED
+                                            <CheckCircle2 className="h-4 w-4 text-green-500" />
+                                            ) : (
+                                            <Copy className="h-4 w-4" />
+                                        )} */}
                                     </Button>
                                 </div>
                                 <div className='mt-4'> 
@@ -113,6 +125,12 @@ const Enable2FA = () => {
                     )}
                 </DialogContent>
             </Dialog>
+
+            <PasswordVerification 
+                isOpen={isOpen}
+                onClose={close}
+                onVerify={handleEnable2FA}
+            />
         </>
     );
 };

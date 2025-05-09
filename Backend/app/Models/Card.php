@@ -17,10 +17,15 @@ class Card extends Model
         'expiration_date',
         'status',
         'type',
+        'pin',
     ];
 
     protected $casts = [
         'expiration_date' => 'date',
+    ];
+
+    protected $hidden = [
+        'pin',
     ];
 
     public function account()
@@ -28,7 +33,7 @@ class Card extends Model
         return $this->belongsTo(Account::class);
     }
 
-    public function transaction()
+    public function transactions()
     {
         return $this->hasMany(Transaction::class);
     }
