@@ -1,12 +1,15 @@
 import { WalletIcon } from 'lucide-react';
 import React from 'react';
 import NavItems from './config/navigation';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import UserMenu from '@/modules/user/components/UserMenu';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 const Navbar = () => {
+  const location = useLocation();
+  const currentTab = NavItems.filter((item) => item.url === location.pathname)[0]?.title.toLowerCase();
+  
   return (
     <div className='w-full py-4'>
     <div className='mx-auto max-w-7xl rounded-xl border bg-background px-6 py-3 shadow-sm'>
@@ -20,7 +23,7 @@ const Navbar = () => {
           </div>
 
           <nav className="hidden md:flex md:flex-1 md:items-center md:justify-center md:gap-6">
-            <Tabs defaultValue="home" className="w-fit">
+            <Tabs defaultValue={currentTab} className="w-fit">
               <TabsList className="grid w-fit grid-cols-5">
                 {NavItems.map((item) => (
                   <TabsTrigger key={item.title} value={item.title.toLowerCase()} asChild>

@@ -1,6 +1,8 @@
 import i18n from "@/utils/i18n";
 import { get } from "@/utils/xhr";
 import { createContext, useContext, useEffect, useState } from "react";
+import { useLoading } from "./LoadingContext";
+import Loading from "@/components/Loading";
 
 const LanguageContext = createContext();
 
@@ -8,13 +10,15 @@ export const LanguageProvider = ({ children }) => {
 
     const [language, setLanguage] = useState(null);
     const [languages, setLanguages] = useState([]);
-    const [loading, setLoading] = useState(true);
+    // const [loading, setLoading] = useState(true);
+    const { isLoading, showLoading, hideLoading } = useLoading();
 
     const setAppLanguage = (selectedLanguage) => {
         i18n.changeLanguage(selectedLanguage); 
         setLanguage(selectedLanguage); 
         localStorage.setItem('lang', selectedLanguage);
-        setLoading(false);
+        // setLoading(false);
+        hideLoading();
     };
 
     const languagesBackend = async () => {
@@ -28,6 +32,7 @@ export const LanguageProvider = ({ children }) => {
     }
 
     useEffect(() => {
+        showLoading();
 
         const init = async () => {
             const backLangs = await languagesBackend();
@@ -44,7 +49,7 @@ export const LanguageProvider = ({ children }) => {
 
     }, []);
 
-    if(loading) return <div>loading...</div>;  // utilizar un skelet
+    if(isLoading) return <Loading />;
 
     const value = {
         language,

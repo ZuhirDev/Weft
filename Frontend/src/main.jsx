@@ -5,15 +5,23 @@ import { UserProvider } from '@user/context/UserContext.jsx';
 import { LanguageProvider } from '@/context/LanguageContext.jsx';
 import App from '@/App.jsx';
 import '@/utils/i18n';
+import { AccountProvider } from './modules/account/context/AccountContext';
+import { LoadingProvider } from './context/LoadingContext';
+import Loading from './components/Loading';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <LanguageProvider>
-      <AuthProvider>
-        <UserProvider >
-          <App />   
-        </UserProvider>
-      </AuthProvider>
-    </LanguageProvider>
+    <LoadingProvider>
+      <LanguageProvider>
+        <AuthProvider>
+          <UserProvider >
+            <AccountProvider>
+              <App />   
+              <Loading />
+            </AccountProvider>
+          </UserProvider>
+        </AuthProvider>
+      </LanguageProvider>
+    </LoadingProvider>
   </StrictMode>,
 );

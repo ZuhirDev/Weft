@@ -1,13 +1,16 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import AUTH_ROUTES from "@/modules/auth/routes/paths";
+import AUTH_ROUTES from "@auth/routes/paths";
+import { useAuth } from "@auth/context/AuthContext";
+import { useLoading } from "@/context/LoadingContext";
+import LandingIMG from '@/assets/img/landing.jpg';
 
 const LandingPage = () => {
     const { t } = useTranslation();
-
+    
     return (
         <div className="flex min-h-screen flex-col">
         <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -54,7 +57,7 @@ const LandingPage = () => {
                     alt="Banking App"
                     className="rounded-lg object-cover"
                     height={400}
-                    src="/placeholder.svg?height=400&width=600"
+                    src={LandingIMG}
                     width={600}
                     />
                 </div>

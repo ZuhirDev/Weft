@@ -7,10 +7,11 @@ const RootLayout = () => {
   const { isAuthenticated } = useAuth();
   return (
     <div>
-      {isAuthenticated && <Navbar />}
+      { isAuthenticated && <Navbar /> }
       <Outlet />
     </div>
   )
 }
 
 export default RootLayout;
+   

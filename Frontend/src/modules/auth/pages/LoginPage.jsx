@@ -23,7 +23,7 @@ const LoginPage = () => {
     const { handleSubmit, register, reset, setError, formState: { errors, isSubmitting } } = useForm({
         resolver: zodResolver(loginSchema),
         defaultValues: {
-            email: 'admin@admin.es',
+            email: 'carlos@carlos.es', // admin@admin.es
             password: '11111111',
         }
     });
