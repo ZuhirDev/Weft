@@ -58,7 +58,7 @@ class TwoFactorAuthController extends Controller
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function verify2FA(Request $request)  // CREAR REGLA VALIDACION
+    public function verify2FA(Request $request)  
     {
         $request->validate([
             'one_time_password' => 'required|numeric|digits:6',
@@ -68,21 +68,20 @@ class TwoFactorAuthController extends Controller
 
         JWTAuth::invalidate(JWTAuth::getToken());
         
-
-        if(!$user->google2fa_secret) return response()->json(['message' => __('auth.2fa.not_enabled')]); // No está habilitado 2FA
+        if(!$user->google2fa_secret) return response()->json(['message' => __('auth.2fa.not_enabled')]); 
 
         $valid = $this->google2fa->verifyKey($user->google2fa_secret, $request->one_time_password);
 
-        if(!$valid) return response()->json(['message' => __('auth.2fa.invalid_code')], 400); // Código inválido.
+        if(!$valid) return response()->json(['message' => __('auth.2fa.invalid_code')], 400);
 
         User::find($user->id)->update([
             'google2fa_enabled' => true,
         ]);
 
-        $newToken = JWTAuth::fromUser($user);  // mirar metodos en web
+        $newToken = JWTAuth::fromUser($user);
 
         return response()->json([
-            'message' => __('auth.2fa.enabled_successfully'), // 2FA habilitado con éxito
+            'message' => __('auth.2fa.enabled_successfully'),
             'token' => $newToken,
             'user' => $user,
         ]);
@@ -99,7 +98,7 @@ class TwoFactorAuthController extends Controller
     {
         $user = Auth::user();
 
-        if(!$user->google2fa_secret) return response()->json(['message' => __('auth.2fa.already_disabled')], 422); // 2FA ya está deshabilitado
+        if(!$user->google2fa_secret) return response()->json(['message' => __('auth.2fa.already_disabled')], 422);
 
         User::find($user->id)->update([
             'google2fa_secret' => null,

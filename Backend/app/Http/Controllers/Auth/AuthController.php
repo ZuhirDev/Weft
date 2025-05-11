@@ -11,10 +11,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
-use Tymon\JWTAuth\JWT;
-
-// use Illuminate\Http\Request;
-
 /** CUANDO EN LA SOLICITUD NO HAYA TOKEN PONER ALGUN MENSAJE DE TOKEN INVALIDAO */
 
 class AuthController extends Controller

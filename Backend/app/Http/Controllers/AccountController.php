@@ -2,87 +2,55 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Account;
-use App\Services\AccountService;
-// use App\Services\AccountService;
 use Illuminate\Http\Request;
-use Tymon\JWTAuth\Facades\JWTAuth;
-use Faker\Factory as Faker;
 
 class AccountController extends Controller
 {
-    /**
-     * https://laravel-news.com/controller-refactor   
-     */
     protected $user;
+    protected $accountService;
 
-    public function __construct()
+    public function __construct(AccountService $accountService)
     {
         $this->user = JWTAuth::user();
-    }
-    
-    private function AccountByIban($iban)
-    {
-        return Account::where('customer_id', $this->user->id)
-                        ->where('iban', $iban)
-                        ->first();
+        $customer = Customer::where('user_id', $this->user->id)->first();
+        $this->user = $customer;
+        $this->accountService = $accountService;
     }
 
-    public function show(AccountService $accountService)
+    public function show()
     {
-        // $accounts = Account::where('customer_id', $this->user->id)->get();
+        $accounts = $this->accountService->getAccountsByCustomerId($this->user->id);
 
-        // if ($accounts->isEmpty()) return response()->json(['message' => 'Cuenta no encontrada'], 404);
-
-        // $accounts = $accounts->map(function($account){
-        //     return [
-        //         'id' => $account->id,
-        //         'titulares' => $this->user->email,
-        //         'alias' => $account->alias,
-        //         'iban' => $account->iban,
-        //         'balance' => (float) $account->balance,
-        //         'swift' => $account->swift,
-        //         'status' => $account->status,
-        //         'type' => $account->type,
-        //         'open_date' => $account->open_date,
-        //     ];
-        // });
-
-        $accounts = $accountService->getAccountsByCustomerId($this->user->id);
-
-        dd($accounts);
+        $formattedAccounts  = $this->accountService->formatAccounts($accounts, $this->user->name);
 
         return response()->json([
             'message' => 'Informacion de cuenta',
-            'accounts' => $accounts,
+            'accounts' => $formattedAccounts,
         ]);
     }
 
-    public function showAccountDetails(Request $request)
+    public function showAccountDetails(IbanRequest $request)
     {
-        $account = $this->AccountByIban($request->iban);
-
+        $account = $this->accountService->getAccountByCustomerId($this->user->id, $request->iban);
+        
         if (!$account) return response()->json(['message' => 'Cuenta no encontrada'], 404);
+        
+        $formattedAccount  = $this->accountService->formatSingleAccount($account, $this->user->name);
 
         return response()->json([
             'message' => 'Detalles de cuenta',
-            'account' => $account,
+            'account' => $formattedAccount,
         ]);
     }
 
 
-    public function store(Request $request)
+    public function store(StoreRequest $request)
     {
-        $iban = $this->generateIban();
-
-        $account = Account::create([
-            'customer_id' => $this->user->id, 
-            'iban' => $iban,
-            'swift' => Account::getSwiftCode(),
-            'status' => 'active',
-        ]);
+        $account = $this->accountService->createAccount($this->user->id, $request->validated());
 
         if(!$account) return response()->json(['message' => 'ha ocurrido un error, repitelo de nuevo ']);
+
+        $account  = $this->accountService->formatSingleAccount($account, $this->user->name);
 
         return response()->json([
             'message' => 'Account created successfully',
@@ -90,106 +58,49 @@ class AccountController extends Controller
         ]);
     }
 
-    public function destroy(Request $request)
+    public function addHolder(Request $request) /// terminar implementación
     {
+        dd("PENDIENTE DE TERMINAR");
+        $account = $this->accountService->getAccountByCustomerId($this->user->id, $request->iban);
 
-        $account = Account::where('customer_id', $this->user->id)
-                            ->where('iban', $request->iban)
-                            ->withTrashed()
-                            ->first();
+        if (!$account) return response()->json(['message' => 'Cuenta no encontrada'], 404);
 
-        if (!$account) {
-            return response()->json(['message' => 'Cuenta no encontrada'], 404);
-        }
+        $addHolder = $this->accountService->addHolder($account, $this->user->id);
 
-        if ($account->deleted_at !== null) {
-            return response()->json(['message' => 'La cuenta ya ha sido eliminada'], 400);
-        }
-    
-        $account->delete();
-    
-        return response()->json(['message' => 'Cuenta eliminada correctamente']);
+        return response()->json(['message' => 'Holder added successfully.'], 200);
+        
     }
 
-
-    public function update(Request $request)
+    public function destroy(IbanRequest $request)
     {
-        $account = $this->AccountByIban($request->iban);
+
+        $account = $this->accountService->getAccountWithTrashed($this->user->id, $request->iban);
+
+        if (!$account) return response()->json(['message' => 'Cuenta no encontrada'], 404);
+                
+        if ($account->deleted_at !== null) return response()->json(['message' => 'La cuenta ya ha sido eliminada'], 400);
     
-        if (!$account) {
-            return response()->json(['message' => 'Cuenta no encontrada'], 404);
-        }
-    
-        $account->update([
-            'status' => $request->status,
-            'type' => $request->type,
+        $deleted = $this->accountService->deleteAccount($account);
+
+        if (!$deleted ) return response()->json(['message' => 'No se pudo eliminar la cuenta'], 400);
+         
+        $formattedAccount  = $this->accountService->formatSingleAccount($account, $this->user->name);
+
+        return response()->json([
+            'message' => 'Cuenta eliminada correctamente',
+            'account' => $formattedAccount,
         ]);
+    }
+
+    public function update(AccountUpdateRequest $request)
+    {
+        $account = $this->accountService->getAccountByCustomerId($this->user->id, $request->iban);
     
+        if (!$account) return response()->json(['message' => 'Cuenta no encontrada'], 404);
+        
+        $this->accountService->updateAccount($account, $request->validated());
+        
         return response()->json(['message' => 'Cuenta actualizada correctamente']);
     }
-    
 
-    public function searchByIban(Request $request)
-    {
-        $account = Account::where('iban', $request->iban)
-                            ->first();
-
-        if (!$account) {
-            return response()->json(['message' => 'Cuenta no encontrada'], 404);
-        }
-    
-        return response()->json([
-            'account' => $account,
-        ]);
-    }
-
-    public function changeStatus(Request $request)
-    {
-        // dd($request);
-        $account = $this->AccountByIban($request->iban);
-
-        if(!$account) return response()->json(['message' => 'Cuenta no encontrada.'], 404);
-
-        $account->update([
-            'status' => $request->status,
-        ]);
-
-        return response()->json([
-            'account' => $account,
-            'message' => 'Cuenta actualizada exitosamente.',
-        ]);
-    }
-
-    public function updateAlias(Request $request)
-    {
-        $account = $this->AccountByIban($request->iban);
-
-        if(!$account) return response()->json(['message' => 'Cuenta no encontrada.'], 404);
-
-        $account->update([
-            'alias' => $request->alias,
-        ]);
-
-        return response()->json([
-            'account' => $account,
-            'message' => 'Cuenta actualizada exitosamente.',
-        ]);
-    }
-
-    private function generateIban()
-    {
-        $faker = Faker::create();
-
-        $iban = $faker->iban('ES');
-
-        return $iban;
-    }
-
-    public function return_success($data)
-    {
-        return response()->json([
-//DRY Laravel: Use Base Controller For Common Responses
-
-        ]);
-    }
 }

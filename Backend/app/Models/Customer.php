@@ -32,8 +32,15 @@ class Customer extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function account()
+    public function accounts()
     {
-        return $this->hasMany(Account::class);
+        return $this->belongsToMany(Account::class, 'account_customer')
+                    ->withPivot('role')
+                    ->withTimestamps();
+    }
+
+    public function getFullName()
+    {
+        return "{$this->name} {$this->last_name}";
     }
 }

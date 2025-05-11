@@ -19,18 +19,60 @@ class TransactionSeeder extends Seeder
     {
         $faker = Faker::create();
 
-        Account::all()->each(function($account) use ($faker){
-            $destinationAccount = Account::where('iban', '!=', $account->iban)->inRandomOrder()->first();
+        $carlosAccount = Account::whereHas('customers', function ($query) {
+            $query->where('dni', '12345678A');
+        })->first();
 
+        $lauraAccount = Account::whereHas('customers', function ($query) {
+            $query->where('dni', '87654321B');
+        })->first();
+
+        if($carlosAccount){
             Transaction::create([
-                'origin_account_id' => $account->id,
-                'destination_account_id' => $destinationAccount->id, 
+                'origin_account_id' => $carlosAccount->id,
+                'destination_account_id' => $lauraAccount->id, 
                 'card_id' => null,
                 'reference' => Str::uuid()->toString(),
                 'amount' => $faker->randomFloat(2, 10, 1000),
-                'status' => $faker->randomElement(['completed', 'pending', 'failed']),
+                'status' => 'completed',
                 'concept' => $faker->sentence(),
-            ]);        
-        });
+            ]);
+
+            $card = $carlosAccount->cards()->first();
+
+            Transaction::create([
+                'origin_account_id' => null,
+                'destination_account_id' => null, 
+                'card_id' => $card->id,
+                'reference' => Str::uuid()->toString(),
+                'amount' => $faker->randomFloat(2, 10, 1000),
+                'status' => 'completed',
+                'concept' => $faker->sentence(),
+            ]);
+        }
+
+        if($lauraAccount){
+            Transaction::create([
+                'origin_account_id' => $lauraAccount->id,
+                'external_destination_iban' => $faker->iban('ES'), 
+                'card_id' => null,
+                'reference' => Str::uuid()->toString(),
+                'amount' => $faker->randomFloat(2, 10, 1000),
+                'status' => 'completed',
+                'concept' => $faker->sentence(),
+            ]);
+
+            $card = $lauraAccount->cards()->first();
+
+            Transaction::create([
+                'origin_account_id' => null,
+                'destination_account_id' => null, 
+                'card_id' => $card->id,
+                'reference' => Str::uuid()->toString(),
+                'amount' => $faker->randomFloat(2, 10, 1000),
+                'status' => 'completed',
+                'concept' => $faker->sentence(),
+            ]);
+        }
     }
 }

@@ -17,14 +17,32 @@ class AccountSeeder extends Seeder
     {
 
         $faker = Faker::create();
+        $carlos = Customer::where('dni', '12345678A')->first();
+        $laura = Customer::where('dni', '87654321B')->first();
 
-        Customer::all()->each(function ($customer) use ( $faker){
-            Account::create([
-                'customer_id' => $customer->id, 
+        if($carlos){
+            $account = Account::create([
+                'alias' => 'Cuenta de Carlos',
                 'iban' => $faker->iban('ES'),
-                'swift' => $faker->swiftBicNumber(),
+                'balance' => $faker->randomFloat(2, 1000, 5000),
+                'swift' => 'WEFTESMMXXX',
                 'status' => 'active',
             ]);
-        });
+
+            $account->customers()->attach($carlos->id, ['role' => 'primary']);
+        }
+
+        if($laura){
+            $account = Account::create([
+                'alias' => 'Cuenta de Laura',
+                'iban' => $faker->iban('ES'),
+                'balance' => $faker->randomFloat(2, 1000, 5000),
+                'swift' => 'WEFTESMMXXX',
+                'status' => 'active',
+            ]);
+
+            $account->customers()->attach($laura->id, ['role' => 'primary']);
+            $account->customers()->attach($carlos->id, ['role' => 'secondary']);
+        }
     }
 }

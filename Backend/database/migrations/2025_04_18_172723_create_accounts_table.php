@@ -14,7 +14,6 @@ return new class extends Migration
         /** PERMITIR 2 TITULARES */
         Schema::create('accounts', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('customer_id')->constrained()->onDelete('cascade');
 
             $table->string('alias')->nullable();
             $table->string('iban', 32)->unique();

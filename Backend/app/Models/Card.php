@@ -11,6 +11,7 @@ class Card extends Model
     use SoftDeletes, HasFactory;
 
     protected $fillable = [
+        'alias',
         'account_id',
         'card_number',
         'cvv',

@@ -12,3 +12,5 @@ Route::get('languages', function(){
 
 
 require __DIR__ . '/auth.php';
+require __DIR__ . '/account.php';
+require __DIR__ . '/card.php';

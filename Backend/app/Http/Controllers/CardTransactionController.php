@@ -2,54 +2,40 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Card;
-use App\Models\Transaction;
+use App\Http\Requests\Card\CardRequest;
+use App\Http\Requests\Transaction\PaymentCardRequest;
+use App\Models\Customer;
+use App\Services\CardTransactionService;
 use Illuminate\Http\Request;
 use Tymon\JWTAuth\Facades\JWTAuth;
-use Illuminate\Support\Str;
 
 
 class CardTransactionController extends Controller
 {
     protected $user;
+    protected $cardTransaction;
 
-    public function __construct()
+    public function __construct(CardTransactionService $cardTransaction)
     {
         $this->user = JWTAuth::user();
+        $customer = Customer::where('user_id', $this->user->id)->first();
+        $this->user = $customer;
+        $this->cardTransaction = $cardTransaction;
     }
 
-    private function CardByNumber($card_number)
+    public function payment(PaymentCardRequest $request)
     {
-        $card = Card::where('card_number', $card_number)
-                    ->whereHas('account', function ($q) {
-                        $q->where('customer_id', $this->user->id);
-                    })
-                    ->first();
+        $card = $this->cardTransaction->getCardByNumber($request->card_number, $this->user->id);
+        
+        if (!$card) return response()->json(['message' => 'Card Not Found'], 404);
 
-        if (!$card) abort(404, 'Tarjeta no encontrada');
-        return $card;
-    }
-
-    public function payment(Request $request)
-    {
-        $card = $this->CardByNumber($request->card_number);
         $account = $card->account;
 
-        if ($account->balance < $request->amount) {
-            return response()->json(['error' => 'Fondos insuficientes'], 400);
-        }
+        $balance = $this->cardTransaction->hasEnoughBalance($account, $request->amount);
 
-        $transaction = Transaction::create([
-            'origin_account_id' => $account->id,
-            'card_id' => $card->id,
-            'reference' => Str::uuid(),
-            'amount' => $request->amount,
-            'status' => 'completed',
-            'type' => 'card_payment',
-            'concept' => $request->concept,
-        ]);
+        if (!$balance) return response()->json(['message' => 'Fondos insuficientes'], 400);
 
-        $account->decrement('balance', $request->amount);
+        $transaction = $this->cardTransaction->createCardTransaction($account, $card->id, $request->validated());
 
         return response()->json([
             'message' => 'Pago con tarjeta realizado correctamente',
@@ -58,13 +44,13 @@ class CardTransactionController extends Controller
     }
 
     
-    public function getAllTransactions(Request $request)
+    public function getAllTransactions(CardRequest $request)
     {
-        $card = $this->CardByNumber($request->card_number);
+        $card = $this->cardTransaction->getCardByNumber($request->card_number, $this->user->id);
 
-        $transactions = $card->transactions()
-                             ->orderBy('created_at', 'desc')
-                             ->get();
+        if (!$card) return response()->json(['message' => 'Card Not Found'], 404);
+
+        $transactions = $this->cardTransaction->getCardTransaction($card);
 
         return response()->json($transactions);
     }

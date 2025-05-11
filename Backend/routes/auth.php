@@ -14,7 +14,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 
-
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
 
@@ -25,7 +24,6 @@ Route::get('prueba', function(Request $request){
     return response()->json(['message' => __('welcome.uknow')], 200);
 });
 
-
 Route::middleware(['auth:api', '2fa'])->group(function(){
 
     Route::middleware(['verified'])->group(function(){
@@ -34,6 +32,7 @@ Route::middleware(['auth:api', '2fa'])->group(function(){
         });
     });
 
+    Route::post('validate-password', [AuthController::class, 'validatePassword']);
     Route::post('validate-password', [AuthController::class, 'validatePassword']);
     Route::post('update-password', [PasswordResetController::class, 'updatePassword']);
     Route::get('me', [AuthController::class, 'me']);

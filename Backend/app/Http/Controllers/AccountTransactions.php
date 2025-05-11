@@ -2,126 +2,80 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Account\IbanRequest;
+use App\Http\Requests\Transaction\AccountTransactionRequest;
 use App\Models\Account;
-use App\Models\Transaction;
-use Illuminate\Http\Request;
+use App\Models\Customer;
+use App\Services\AccountService;
+use App\Services\AccountTransactionService;
 use Tymon\JWTAuth\Facades\JWTAuth;
-use Illuminate\Support\Str;
 
 class AccountTransactions extends Controller
 {
     protected $user;
+    protected $accountService;
+    protected $accountTransaction;
 
-    public function __construct()
+    public function __construct(AccountTransactionService $accountTransaction, AccountService $accountService)
     {
         $this->user = JWTAuth::user();
+        $customer = Customer::where('user_id', $this->user->id)->first();
+        $this->user = $customer;
+        $this->accountTransaction = $accountTransaction;
+        $this->accountService = $accountService;
     }
 
-    private function AccountByIban($iban)
+    public function deposit(AccountTransactionRequest $request)
     {
-        $account = Account::where('customer_id', $this->user->id)
-                        ->where('iban', $iban)
-                        ->first();
+        $account = $this->accountService->getAccountByCustomerId($this->user->id, $request->iban);
 
-        if (!$account) return response()->json(['error' => 'Cuenta no encontrada'], 404); // en caso de no existir no lanza error
+        if (!$account) return response()->json(['message' => 'Cuenta no encontrada'], 404);
 
-        return $account;
-    }
+        $transaction = $this->accountTransaction->depositFunds($account, $request->validated());
 
-    // CUANDO EL USUARIO PULSE EN TRANSACCION QUE SE MUESTRE SU INFORMACION
-    public function show($id)
-    {
-        $transaction = Transaction::where('id', $id)
-            ->where(function ($q) {
-                $q->whereHas('originAccount', fn($q) => $q->where('customer_id', $this->user->id))
-                ->orWhereHas('destinationAccount', fn($q) => $q->where('customer_id', $this->user->id));
-            })->first();
-
-        if (!$transaction) return response()->json(['error' => 'Transacción no encontrada'], 404);
-
-        return response()->json($transaction);
-    }
-
-
-    public function deposit(Request $request)
-    {
-        $account = $this->AccountByIban($request->iban);
-
-        if(!$account) return;
-
-        $transaction = Transaction::create([
-            'origin_account_id' => null,
-            'destination_account_id' => $account->id,
-            'reference' => Str::uuid()->toString(),
-            'amount' => $request->amount,
-            'status' => 'completed',
-            'type' => 'deposit',
-            'concept' => $request->concept,
-        ]);
-
-        $account->increment('balance', $request->amount);
+        if($transaction) return response()->json(['message' => 'Ha ocurrido un error']);
 
         return response()->json([
             'message' => 'Depósito realizado correctamente',
-            'account' => $account->fresh(),
             'transaction' => $transaction,
         ]);
-    
     }
 
-    public function withdraw(Request $request)
+    public function withdraw(AccountTransactionRequest $request)
     {
-        $account = $this->AccountByIban($request->iban);
-
-        if ($account->balance < $request->amount) {
-            return response()->json(['error' => 'Fondos insuficientes'], 400);
-        }
-
-        $transaction = Transaction::create([
-            'origin_account_id' => $account->id,
-            'destination_account_id' => null,
-            'reference' => Str::uuid()->toString(),
-            'amount' => $request->amount,
-            'status' => 'completed',
-            'type' => 'withdrawal',
-            'concept' => $request->concept,
-        ]);
-
-        $account->decrement('balance', $request->amount);
+        $account = $this->accountService->getAccountByCustomerId($this->user->id, $request->iban);
+        
+        if (!$account) return response()->json(['message' => 'Cuenta no encontrada'], 404);
+        
+        $balance = $this->accountTransaction->hasEnoughBalance($account, $request->amount);
+        
+        if (!$balance) return response()->json(['error' => 'Fondos insuficientes'], 400);
+        
+        $transaction = $this->accountTransaction->withdrawalFunds($account, $request->validated());
 
         return response()->json([
             'message' => 'Retiro realizado correctamente',
-            'account' => $account->fresh(),
             'transaction' => $transaction,
         ]);
     }
 
-    public function transfer(Request $request)
+    public function transfer(AccountTransactionRequest $request)
     {
-        $origin = $this->AccountByIban($request->iban);
+        $origin = $this->accountService->getAccountByCustomerId($this->user->id, $request->iban);
 
+        if (!$origin) return response()->json(['message' => 'Cuenta no encontrada'], 404);
+
+        if(!$request->destination_iban) return response()->json(['message' => 'Es necesario la cuenta de destino'], 404);
+        
         $destination = Account::where('iban', $request->destination_iban)->first();
-
-        if (!$origin || !$destination) {
-            return response()->json(['error' => 'Cuenta de origen o destino no encontrada'], 404);
-        }
-
-        if ($origin->balance < $request->amount) {
-            return response()->json(['error' => 'Fondos insuficientes'], 400);
-        }
-
-        $transaction = Transaction::create([
-            'origin_account_id' => $origin->id,
-            'destination_account_id' => $destination->id,
-            'reference' => Str::uuid()->toString(),
-            'amount' => $request->amount,
-            'status' => 'completed',
-            'type' => 'transfer',
-            'concept' => $request->concept,
-        ]);
-
-        $origin->decrement('balance', $request->amount);
-        $destination->increment('balance', $request->amount);
+        
+        if (!$destination) return response()->json(['error' => 'Cuenta de origen o destino no encontrada'], 404);
+        
+        $balance = $this->accountTransaction->hasEnoughBalance($origin, $request->amount);
+        
+        if (!$balance) return response()->json(['error' => 'Fondos insuficientes'], 400);
+        
+        $transaction = $this->accountTransaction->transferFunds($origin, $destination, $request->validated());
 
         return response()->json([
             'message' => 'Transferencia realizada correctamente',
@@ -129,42 +83,33 @@ class AccountTransactions extends Controller
         ]);
     }
 
-    public function externalTransfer(Request $request)
+    public function externalTransfer(AccountTransactionRequest $request)
     {
-        $origin = $this->AccountByIban($request->iban);
+        $origin = $this->accountService->getAccountByCustomerId($this->user->id, $request->iban);
 
-        if ($origin->balance < $request->amount) {
-            return response()->json(['error' => 'Fondos insuficientes'], 400);
-        }
+        if (!$origin) return response()->json(['message' => 'Cuenta no encontrada'], 404);
 
-        $transaction = Transaction::create([
-            'origin_account_id' => $origin->id,
-            'external_destination_iban' => $request->destination_iban,
-            'reference' => Str::uuid()->toString(),
-            'amount' => $request->amount,
-            'status' => 'completed',
-            'type' => 'transfer',
-            'concept' => $request->concept,
-        ]);
+        if(!$request->external_iban) return response()->json(['message' => 'Es necesario la cuenta de destino'], 404);
 
-        $origin->decrement('balance', $request->amount);
+        $balance = $this->accountTransaction->hasEnoughBalance($origin, $request->amount);
+        
+        if (!$balance) return response()->json(['error' => 'Fondos insuficientes'], 400);
 
+        $transaction = $this->accountTransaction->transferExternalFunds($origin, $request->validated());
+        
         return response()->json([
             'message' => 'Transferencia externa registrada',
             'transaction' => $transaction,
         ]);
     }
 
-    public function accountTransactions(Request $request)
+    public function accountTransactions(IbanRequest $request)
     {
-        $account = $this->AccountByIban($request->iban);
+        $account = $this->accountService->getAccountByCustomerId($this->user->id, $request->iban);
 
-        $transactions = Transaction::where(function ($query) use ($account) {
-                                $query->where('origin_account_id', $account->id)
-                                    ->orWhere('destination_account_id', $account->id);
-                            })
-                            ->orderBy('created_at', 'desc')
-                            ->get();
+        if (!$account) return response()->json(['message' => 'Cuenta no encontrada'], 404);
+
+        $transactions = $this->accountTransaction->getAccountTransactions($account);
 
         return response()->json($transactions);
     }

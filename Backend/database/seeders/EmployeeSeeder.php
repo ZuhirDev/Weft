@@ -14,9 +14,11 @@ class EmployeeSeeder extends Seeder
      */
     public function run(): void
     {
-        User::where('type', 'employee')->get()->each(function($user){
+        $admin = User::where('email', 'admin@admin.es')->first();
+
+        if($admin){
             Employee::create([
-                'user_id' => $user->id,
+                'user_id' => $admin->id,
                 'name' => 'Administrador',
                 'last_name'=> 'Administrador',
                 'date_of_birth' => '2003-07-18',
@@ -26,6 +28,6 @@ class EmployeeSeeder extends Seeder
                 'address' => 'Calle Botera 7',
                 'avatar' => null,
             ]);
-        });
+        }
     }
 }

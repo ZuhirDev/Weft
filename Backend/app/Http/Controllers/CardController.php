@@ -2,76 +2,70 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Account;
-use App\Models\Card;
-use Illuminate\Http\Request;
-use Faker\Factory as Faker;
-use Illuminate\Support\Facades\Crypt;
+use App\Http\Requests\Account\IbanRequest;
+use App\Http\Requests\Card\CardPinUpdateRequest;
+use App\Http\Requests\Card\CardRequest;
+use App\Http\Requests\Card\CardUpdateRequest;
+use App\Http\Requests\Card\CreateCardRequest;
+use App\Models\Customer;
+use App\Services\AccountService;
+use App\Services\CardService;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class CardController extends Controller
 {
     protected $user;
+    protected $accountService;
+    protected $cardService;
 
-    public function __construct()
+    public function __construct(AccountService $accountService, CardService $cardService) 
     {
         $this->user = JWTAuth::user();
-    }
-    
-    private function CardByNumber($card_numer)
-    {
-        return Card:://where('customer_id', $this->user->id)
-                        //->
-                        where('card_number', $card_numer)
-                        ->first();
+        $customer = Customer::where('user_id', $this->user->id)->first();
+        $this->user = $customer;
+        $this->accountService = $accountService;
+        $this->cardService = $cardService;
     }
 
-    public function getCardByAccount(Request $request)
+    public function getCardsByAccount(IbanRequest $request)
     {
-        $account = Account::where('iban', $request->iban)->first();
-
+        $account = $this->accountService->getAccountByCustomerId($this->user->id, $request->iban);
+        
         if (!$account) return response()->json(['message' => 'Account not found'], 404);
 
-        $cards = $account->cards()->get()->map(function($card){
-            return [
-                'card_number' => $card->card_number,
-                'expiration_date' => $card->expiration_date,
-                'status' => $card->status,
-                'type' => $card->type,
-            ];
-        });
+        $cards = $this->cardService->getCardsByAccount($account->iban);
+
+        $formattedCards = $this->cardService->formatCards($cards);
 
         return response()->json([
             'message' => 'Account cards retrieved successfully',
-            'cards' => $cards
+            'cards' => $formattedCards
         ]);
     }
 
-    public function store(Request $request)
+    public function store(CreateCardRequest $request)
     {
-        $account = Account::where('iban', $request->iban)->first();
+        $account = $this->accountService->getAccountByCustomerId($this->user->id, $request->iban);
+        
+        if (!$account) return response()->json(['message' => 'Account not found'], 404);
 
-        $card = Card::create([
-            'account_id' => $account->id,
-            'card_number' => $this->generateCard(),
-            'cvv' => $this->generateCVV(),
-            'expiration_date' => now()->addYears(5),
-            'status' => 'active',
-            'type' => $request->type,
-            'pin' => Crypt::encryptString($this->generatePin()),
-        ]);
+        $card = $this->cardService->createCard($account, $request->validated());
+        
+        $formattedCard = $this->cardService->formatSingleCard($card);
 
         return response()->json([
             'message' => 'Card created successfully',
-            'card' => $card
+            'card' => $formattedCard
         ], 201);
     }
 
-    public function showPin(Request $request)
+    public function showPin(CardRequest $request)
     {
-        $card = $this->CardByNumber($request->card_number);
+        $card = $this->cardService->getCardByNumber($request->card_number);
 
-        $pin = Crypt::decryptString($card->pin);
+        if (!$card) return response()->json(['message' => 'Card not found'], 404);
+
+        $pin = $this->cardService->getPinCard($card);
 
         return response()->json([
             'message' => 'PIN retrieved successfully',
@@ -79,59 +73,26 @@ class CardController extends Controller
         ]);
     }
 
-    public function updatePin(Request $request)
+    public function updatePin(CardPinUpdateRequest $request)
     {
-        $card = $this->CardByNumber($request->card_number);
+        $card = $this->cardService->getCardByNumber($request->card_number);
+
+        if (!$card) return response()->json(['message' => 'Card not found'], 404);
         
-        $card->update([
-            'pin' => Crypt::encryptString($request->pin),
-        ]);
+        $this->cardService->updatePinCard($card, $request->new_pin);
 
-        return response()->json([
-            'message' => 'PIN updated successfully',
-            'card' => $card
-        ]);
+        return response()->json(['message' => 'PIN updated successfully']);
     }
 
-    public function changeStatus(Request $request)
+    public function update(CardUpdateRequest $request)
     {
-        $card = $this->CardByNumber($request->card_number);
+        $card = $this->cardService->getCardByNumber($request->card_number);
 
-        $card->update([
-            'status' => $request->status,
-        ]);
+        if (!$card) return response()->json(['message' => 'Card not found'], 404);
+        
+        $this->cardService->updateCard($card, $request->validated());
 
-        return response()->json([
-            'message' => 'Card status updated successfully',
-            'card' => $card,
-        ]);
+        return response()->json(['message' => 'Card updated successfully']);
     }
 
-    private function generateCVV()
-    {
-        $faker = Faker::create();
-
-        $cvv = $faker->numberBetween(100, 999);
-
-        return $cvv;
-    }
-
-    
-    private function generateCard()
-    {
-        $faker = Faker::create();
-
-        $card = $faker->creditCardNumber();
-
-        return $card;
-    }
-
-    private function generatePin()
-    {
-        $faker = Faker::create();
-
-        $pin = $faker->numberBetween(1000, 9999);
-
-        return $pin;
-    }
 }

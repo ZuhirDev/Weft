@@ -25,7 +25,7 @@ class UserSeeder extends Seeder
         ]);
 
         User::create([
-            'email'=> 'john@cena.es',
+            'email'=> 'carlos@carlos.es',
             'status'=> 'active',
             'google2fa_secret'=> null,
             'google2fa_enabled'=> false,
@@ -34,7 +34,7 @@ class UserSeeder extends Seeder
         ]);
 
         User::create([
-            'email'=> 'randy@orton.es',
+            'email'=> 'laura@laura.es',
             'status'=> 'active',
             'google2fa_secret'=> null,
             'google2fa_enabled'=> false,
