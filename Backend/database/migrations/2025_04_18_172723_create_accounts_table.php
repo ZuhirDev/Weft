@@ -11,7 +11,6 @@ return new class extends Migration
      */
     public function up(): void
     {
-        /** PERMITIR 2 TITULARES */
         Schema::create('accounts', function (Blueprint $table) {
             $table->id();
 

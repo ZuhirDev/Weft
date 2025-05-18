@@ -27,6 +27,20 @@ class CardController extends Controller
         $this->cardService = $cardService;
     }
 
+    public function getAllCustomerCards()
+    {
+        $allCards = $this->cardService->getCardsByCustomerId($this->user->id);
+
+        if ($allCards->isEmpty()) return response()->json(['message' => 'Cards not found'], 404);
+        
+        $formattedCards = $this->cardService->formatCards($allCards);
+
+        return response()->json([
+            'message' => 'All customer cards retrieved successfully',
+            'cards' => $formattedCards
+        ]);
+    }
+
     public function getCardsByAccount(IbanRequest $request)
     {
         $account = $this->accountService->getAccountByCustomerId($this->user->id, $request->iban);

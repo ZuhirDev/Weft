@@ -11,19 +11,11 @@ class Account extends Model
     use SoftDeletes, HasFactory;
 
     protected $fillable = [
-<<<<<<< HEAD
-        'customer_id', 
-        'iban',
-        'balance',
-        'swift',
-        'status', // evitar operaciones si no esta activada
-=======
         'alias',
         'iban',
         'balance',
         'swift',
         'status',
->>>>>>> b43b5b3 (Temporales)
         'type',
     ];
 
@@ -57,15 +49,6 @@ class Account extends Model
     {
         return $this->hasMany(Transaction::class, 'origin_account_id');
     }
-<<<<<<< HEAD
-    
-
-    public static function getSwiftCode()
-    {
-        return 'WEFTESMMXXX';
-    } 
-=======
->>>>>>> b43b5b3 (Temporales)
 
     public function scopeTable($query)
     {

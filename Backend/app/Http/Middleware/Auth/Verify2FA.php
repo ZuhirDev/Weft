@@ -25,7 +25,6 @@ class Verify2FA
             ]);
         }
 
-        dd($user);
         return $next($request);
     }
 }

@@ -17,6 +17,13 @@ class CardService{
         })->get();
     }
 
+    public function getCardsByCustomerId(int $customerId)
+    {
+        return Card::whereHas('account.customers', function ($query) use ($customerId) {
+            $query->where('customer_id', $customerId);
+        })->get();
+    }
+
     public function getCardByAccount(string $iban)
     {
         return Card::whereHas('account', function ($query) use ($iban) {
@@ -39,6 +46,7 @@ class CardService{
     public function formatSingleCard(Card $card): array
     {
         return [
+            'account_id' => $card->account_id,
             'alias' => $card->alias,
             'card_number' => $card->card_number,
             'cvv' => $card->cvv,

@@ -1,16 +1,20 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Account;
 
+use App\Helpers\Datatable;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Account\IbanRequest;
 use App\Http\Requests\Transaction\AccountTransactionRequest;
 use App\Models\Account;
 use App\Models\Customer;
+use App\Models\Transaction;
 use App\Services\AccountService;
 use App\Services\AccountTransactionService;
+use Illuminate\Http\Request;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
-class AccountTransactions extends Controller
+class AccountTransactionController extends Controller
 {
     protected $user;
     protected $accountService;
@@ -33,7 +37,7 @@ class AccountTransactions extends Controller
 
         $transaction = $this->accountTransaction->depositFunds($account, $request->validated());
 
-        if($transaction) return response()->json(['message' => 'Ha ocurrido un error']);
+        if(!$transaction) return response()->json(['message' => 'Ha ocurrido un error']);
 
         return response()->json([
             'message' => 'Depósito realizado correctamente',
@@ -43,6 +47,7 @@ class AccountTransactions extends Controller
 
     public function withdraw(AccountTransactionRequest $request)
     {
+        // dd("aki");
         $account = $this->accountService->getAccountByCustomerId($this->user->id, $request->iban);
         
         if (!$account) return response()->json(['message' => 'Cuenta no encontrada'], 404);
@@ -112,5 +117,26 @@ class AccountTransactions extends Controller
         $transactions = $this->accountTransaction->getAccountTransactions($account);
 
         return response()->json($transactions);
+    }
+
+    public function all(Request $request)
+    {
+        $customer = Customer::find(2);
+        // dd($customer);
+        $table = Transaction::AllCustomerTransactions($customer);
+
+        // dd($table->get());
+
+        return Datatable::of($table)
+                        ->toResponse();
+    }
+
+    public function getLatestTransactions(Request $request)
+    {
+        $transactions = $this->accountTransaction->latestTransactions($this->user->id);
+
+        return response()->json([
+            'transactions' => $transactions,
+        ]);
     }
 }

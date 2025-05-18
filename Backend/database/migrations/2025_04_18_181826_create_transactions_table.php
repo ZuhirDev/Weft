@@ -19,12 +19,11 @@ return new class extends Migration
             $table->foreignId('card_id')->nullable()->constrained('cards')->onDelete('cascade');
 
             $table->string('reference')->unique();
-            $table->string('reference')->unique();
             $table->decimal('amount', 15, 2)->default(0.00);
             $table->enum('status', ['pending', 'completed', 'failed'])->default('pending');
             $table->enum('type', ['deposit', 'withdrawal', 'transfer', 'fee', 'card_payment'])->default('transfer');
-            $table->enum('type', ['deposit', 'withdrawal', 'transfer', 'fee', 'card_payment'])->default('transfer');
             $table->string('concept')->nullable();
+            $table->string('category')->nullable();
 
             $table->timestamps();
             $table->softDeletes();

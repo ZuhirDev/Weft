@@ -1,7 +1,7 @@
 <?php
 
+use App\Http\Controllers\Account\AccountTransactionController;
 use App\Http\Controllers\AccountController;
-use App\Http\Controllers\AccountTransactions;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth:api', '2fa'])->group(function(){
@@ -17,9 +17,13 @@ Route::middleware(['auth:api', '2fa'])->group(function(){
 
 
 
-    Route::post('account/transaction/deposit', [AccountTransactions::class, 'deposit']);
-    Route::post('account/transaction/withdraw', [AccountTransactions::class, 'withdraw']);
-    Route::post('account/transaction/transfer', [AccountTransactions::class, 'transfer']);
-    Route::post('account/transaction/external-transfer', [AccountTransactions::class, 'externalTransfer']);
-    Route::post('account/transaction/all-transactions', [AccountTransactions::class, 'accountTransactions']);
+    Route::post('account/transaction/deposit', [AccountTransactionController::class, 'deposit']);
+    Route::post('account/transaction/withdraw', [AccountTransactionController::class, 'withdraw']);
+    Route::post('account/transaction/transfer', [AccountTransactionController::class, 'transfer']);
+    Route::post('account/transaction/external-transfer', [AccountTransactionController::class, 'externalTransfer']);
+    Route::post('account/transaction/all-transactions', [AccountTransactionController::class, 'accountTransactions']);
+
+
+    Route::get('transactions', [AccountTransactionController::class, 'all']);
+    Route::get('transactions/latest', [AccountTransactionController::class, 'getLatestTransactions']);
 });

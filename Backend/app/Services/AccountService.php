@@ -111,13 +111,15 @@ class AccountService
         return true;
     }
 
-    public function updateAccount(Account $account, array $data): bool
+    public function updateAccount(Account $account, array $data)
     {
-        return $account->update([
+        $updated = $account->update([
             'alias' => $data['alias'] ?? $account->alias,
             'status' => $data['status'] ?? $account->status,
             'type' => $data['type'] ?? $account->type,           
         ]);
+
+        return $updated ? $account->getChanges() : null;
     }
     
     

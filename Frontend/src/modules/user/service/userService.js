@@ -4,7 +4,7 @@ import { get, post } from '@/utils/xhr';
 export const meService = async () => {
     try {
         const response = await get({url: '/me'});
-        console.log("service", response);
+
         return response.data;
     } catch (error) {
         throw error;
@@ -24,7 +24,6 @@ export const updatePasswordService = async (passwords) => {
             }
         });
 
-        console.log("response en service", response)
         return response.data;
     } catch (error) {
         throw error;
@@ -74,7 +73,7 @@ export const sendVerifyEmailService = async () => {
     }
 }
 
-export const verifyEmailService = async (url) => { console.log(url)
+export const verifyEmailService = async (url) => {
     try {
         const response = await get({
             url: url

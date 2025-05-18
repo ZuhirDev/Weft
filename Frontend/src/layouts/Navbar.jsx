@@ -5,6 +5,7 @@ import { NavLink, useLocation } from 'react-router-dom';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import UserMenu from '@/modules/user/components/UserMenu';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
+import { ModeToggle } from '@/components/mode-toggle';
 
 const Navbar = () => {
   const location = useLocation();
@@ -40,6 +41,7 @@ const Navbar = () => {
           {/* <Notifications />
           <HelpPage /> */}
           <div className="flex items-center gap-4">
+            <ModeToggle />
             <LanguageSwitcher />
             <UserMenu />
           </div>

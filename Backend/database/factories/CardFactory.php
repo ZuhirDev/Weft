@@ -20,6 +20,7 @@ class CardFactory extends Factory
         return [
             'account_id' => Account::factory(),
             'card_number' => $this->faker->creditCardNumber,
+            'pin' => strval($this->faker->numberBetween(1000, 9999)),
             'cvv' => $this->faker->numerify('###'),
             'expiration_date' => $this->faker->dateTimeBetween('+1 year', '+5 years')->format('Y-m-d'),
             'status' => 'active',

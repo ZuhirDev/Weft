@@ -4,8 +4,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link, Navigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import AUTH_ROUTES from "@auth/routes/paths";
-import { useAuth } from "@auth/context/AuthContext";
-import { useLoading } from "@/context/LoadingContext";
 import LandingIMG from '@/assets/img/landing.jpg';
 
 const LandingPage = () => {

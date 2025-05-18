@@ -2,7 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Account\AccountUpdateRequest;
+use App\Http\Requests\Account\IbanRequest;
+use App\Http\Requests\Account\StoreRequest;
+use App\Models\Customer;
+use App\Services\AccountService;
 use Illuminate\Http\Request;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AccountController extends Controller
 {
@@ -98,9 +104,9 @@ class AccountController extends Controller
     
         if (!$account) return response()->json(['message' => 'Cuenta no encontrada'], 404);
         
-        $this->accountService->updateAccount($account, $request->validated());
+        $updated = $this->accountService->updateAccount($account, $request->validated());
         
-        return response()->json(['message' => 'Cuenta actualizada correctamente']);
+        return response()->json(['message' => 'Cuenta actualizada correctamente', 'data' => $updated]);
     }
 
 }
