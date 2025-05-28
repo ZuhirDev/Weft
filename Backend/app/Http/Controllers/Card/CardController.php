@@ -1,12 +1,14 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Card;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Account\IbanRequest;
 use App\Http\Requests\Card\CardPinUpdateRequest;
 use App\Http\Requests\Card\CardRequest;
 use App\Http\Requests\Card\CardUpdateRequest;
 use App\Http\Requests\Card\CreateCardRequest;
+use App\Models\Card;
 use App\Models\Customer;
 use App\Services\AccountService;
 use App\Services\CardService;
@@ -31,12 +33,12 @@ class CardController extends Controller
     {
         $allCards = $this->cardService->getCardsByCustomerId($this->user->id);
 
-        if ($allCards->isEmpty()) return response()->json(['message' => 'Cards not found'], 404);
+        if ($allCards->isEmpty()) return response()->json(['message' => __('card/messages.cards_not_found')], 404);
         
         $formattedCards = $this->cardService->formatCards($allCards);
 
         return response()->json([
-            'message' => 'All customer cards retrieved successfully',
+            'message' => __('card/messages.cards_retrieved'),
             'cards' => $formattedCards
         ]);
     }
@@ -45,14 +47,14 @@ class CardController extends Controller
     {
         $account = $this->accountService->getAccountByCustomerId($this->user->id, $request->iban);
         
-        if (!$account) return response()->json(['message' => 'Account not found'], 404);
+        if (!$account) return response()->json(['message' => __('account/messages.account_not_found')], 404);
 
         $cards = $this->cardService->getCardsByAccount($account->iban);
 
         $formattedCards = $this->cardService->formatCards($cards);
 
         return response()->json([
-            'message' => 'Account cards retrieved successfully',
+            'message' => __('card/messages.account_cards_retrieved'),
             'cards' => $formattedCards
         ]);
     }
@@ -61,14 +63,14 @@ class CardController extends Controller
     {
         $account = $this->accountService->getAccountByCustomerId($this->user->id, $request->iban);
         
-        if (!$account) return response()->json(['message' => 'Account not found'], 404);
+        if (!$account) return response()->json(['message' => __('account/messages.account_not_found')], 404);
 
         $card = $this->cardService->createCard($account, $request->validated());
         
         $formattedCard = $this->cardService->formatSingleCard($card);
 
         return response()->json([
-            'message' => 'Card created successfully',
+            'message' => __('card/messages.card_created'),
             'card' => $formattedCard
         ], 201);
     }
@@ -77,12 +79,12 @@ class CardController extends Controller
     {
         $card = $this->cardService->getCardByNumber($request->card_number);
 
-        if (!$card) return response()->json(['message' => 'Card not found'], 404);
+        if (!$card) return response()->json(['message' => __('card/messages.card_not_found')], 404);
 
         $pin = $this->cardService->getPinCard($card);
 
         return response()->json([
-            'message' => 'PIN retrieved successfully',
+            'message' => __('card/messages.pin_retrieved'),
             'pin' => $pin,
         ]);
     }
@@ -91,22 +93,29 @@ class CardController extends Controller
     {
         $card = $this->cardService->getCardByNumber($request->card_number);
 
-        if (!$card) return response()->json(['message' => 'Card not found'], 404);
+        if (!$card) return response()->json(['message' => __('card/messages.card_not_found')], 404);
         
         $this->cardService->updatePinCard($card, $request->new_pin);
 
-        return response()->json(['message' => 'PIN updated successfully']);
+        return response()->json(['message' => __('card/messages.pin_updated')]);
     }
 
     public function update(CardUpdateRequest $request)
     {
         $card = $this->cardService->getCardByNumber($request->card_number);
 
-        if (!$card) return response()->json(['message' => 'Card not found'], 404);
+        if (!$card) return response()->json(['message' => __('card/messages.card_not_found')], 404);
         
         $this->cardService->updateCard($card, $request->validated());
 
-        return response()->json(['message' => 'Card updated successfully']);
+        return response()->json(['message' => __('card/messages.card_updated')]);
     }
 
+    public function cardTypes()
+    {
+        return response()->json([
+            'message' => __('card/messages.card_types'),
+            'data' => Card::getTypes(),
+        ]);
+    }
 }

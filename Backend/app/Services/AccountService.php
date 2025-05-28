@@ -29,6 +29,15 @@ class AccountService
         ->first();
     }
 
+    public function getAccountById(int $customerId, string $accountId): ?Account
+    {
+        return Account::whereHas('customers', function ($query) use ($customerId) {
+            $query->where('customer_id', $customerId);
+        })
+        ->where('id', $accountId)
+        ->first();
+    }
+
     public function getAccountsByCustomerId(int $customerId): Collection
     {
         return Account::whereHas('customers', function ($query) use ($customerId) {
@@ -39,9 +48,9 @@ class AccountService
     public function getAccountWithTrashed(int $customerId, string $iban): ?Account
     {
         return Account::where('customer_id', $customerId)
-                    ->where('iban', $iban)
-                    ->withTrashed()
-                    ->first();
+                        ->where('iban', $iban)
+                        ->withTrashed()
+                        ->first();
     }
     
     public function getFormattedHolders(Account $account): array
@@ -103,10 +112,8 @@ class AccountService
 
     public function deleteAccount(Account $account): bool
     {
-        if ($account->deleted_at !== null) {
-            return false;
-        }
-
+        if ($account->deleted_at !== null) return false;
+        
         $account->delete();
         return true;
     }
@@ -121,6 +128,4 @@ class AccountService
 
         return $updated ? $account->getChanges() : null;
     }
-    
-    
 }

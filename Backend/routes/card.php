@@ -1,7 +1,7 @@
 <?php
 
-use App\Http\Controllers\CardController;
-use App\Http\Controllers\CardTransactionController;
+use App\Http\Controllers\Card\CardTransactionController;
+use App\Http\Controllers\Card\CardController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -13,6 +13,7 @@ Route::middleware(['auth:api', '2fa'])->group(function(){
     Route::post('card/pin', [CardController::class, 'showPin']);
     Route::put('card/pin', [CardController::class, 'updatePin']);
     Route::put('card/update', [CardController::class, 'update']);
+    Route::get('card/types', [CardController::class, 'cardTypes']);
 
 
     

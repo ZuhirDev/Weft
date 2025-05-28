@@ -17,10 +17,13 @@ class AccountFactory extends Factory
     public function definition(): array
     {
         return [
-            'IBAN' => $this->faker->unique()->iban('ES'),
-            'swift' => strtoupper($this->faker->bothify('????ESMMXXX')),
+            'alias' => $this->faker->optional()->word(),
+            'iban' => $this->faker->unique()->iban('ES'),
             'balance' => $this->faker->randomFloat(2, 0, 10000),
-            'status' => 'active',
+            'swift' => strtoupper($this->faker->bothify('????ESMMXXX')),
+            'status' => $this->faker->randomElement(['active', 'blocked', 'closed']),
+            'type' => $this->faker->randomElement(['checking', 'savings', 'investment']),
+            'open_date' => $this->faker->date()
         ];
     }
 }

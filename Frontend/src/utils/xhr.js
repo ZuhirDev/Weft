@@ -1,7 +1,8 @@
 import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_API_URL;
-axios.defaults.baseURL = API_URL;
+
+axios.defaults.baseURL = `${API_URL}/api`;
 axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 axios.defaults.headers.post['Accept'] = 'application/json';

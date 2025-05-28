@@ -12,10 +12,10 @@ class CardTransactionService{
     public function getCardByNumber(string $cardNumber, int $customerId): ?Card
     {
         return Card::where('card_number', $cardNumber)
-            ->whereHas('account.customers', function ($query) use ($customerId) {
-                $query->where('customers.id', $customerId);
-            })
-            ->first();
+                     ->whereHas('account.customers', function ($query) use ($customerId) {
+                        $query->where('customers.id', $customerId);
+                    })
+                    ->first();
     }
 
     public function createCardTransaction(Account $account, int $cardId, array $data)
@@ -23,7 +23,7 @@ class CardTransactionService{
         $transaction = Transaction::create([
             'origin_account_id' => $account->id,
             'card_id' => $cardId,
-            'reference' => Str::uuid(),
+            'reference' => Str::random(8),
             'amount' => $data['amount'],
             'status' => 'completed',
             'type' => 'card_payment',
@@ -43,7 +43,7 @@ class CardTransactionService{
     public function getCardTransaction(Card $card)
     {
         return $card->transactions()
-                             ->orderBy('created_at', 'desc')
-                             ->get();
+                    ->orderBy('created_at', 'desc')
+                    ->get();
     }
 }

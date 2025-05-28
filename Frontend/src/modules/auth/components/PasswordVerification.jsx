@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import React, { useState } from 'react';
+import React from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
@@ -9,10 +9,6 @@ import { Lock } from "lucide-react"
 import FormInput from '@/components/FormInput';
 import { useAuth } from '@auth/context/AuthContext';
 
-
-/** ya funciona solo falta que alos componentes que se utilizen mostrar algun spinner o algo para que cuando finalize
- * la funcion no se quede en blanco
- */
 
 const PasswordVerification = ({ isOpen, onClose, onVerify }) => {
     
@@ -30,11 +26,9 @@ const PasswordVerification = ({ isOpen, onClose, onVerify }) => {
     const handleClose = () => onClose();
 
     const onSubmit = async (data) => {
-        console.log("data", data)
 
         try {
             const response = await passwordVerification(data);
-            console.log("response ", response)
             reset();
             onVerify();
         } catch (error) {
@@ -93,7 +87,7 @@ const PasswordVerification = ({ isOpen, onClose, onVerify }) => {
                                 variant="outline"
                                 className="w-full p-3 bg-primary text-white rounded-lg focus:outline-none"
                             >
-                                {isSubmitting ? t('auth:loading') : /* t('auth:sign_up') */ 'Verificar' }
+                                {isSubmitting ? t('auth:loading') : 'Verificar' }
                             </Button>
                         </div>
                     </form>

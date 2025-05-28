@@ -46,6 +46,7 @@ class CardService{
     public function formatSingleCard(Card $card): array
     {
         return [
+            'id' => $card->id,
             'account_id' => $card->account_id,
             'alias' => $card->alias,
             'card_number' => $card->card_number,

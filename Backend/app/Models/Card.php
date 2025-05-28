@@ -38,4 +38,9 @@ class Card extends Model
     {
         return $this->hasMany(Transaction::class);
     }
+
+    public static function getTypes(): array
+    {
+        return ['debit', 'credit'];
+    }
 }

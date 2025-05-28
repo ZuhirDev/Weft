@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Card;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Card\CardRequest;
 use App\Http\Requests\Transaction\PaymentCardRequest;
 use App\Models\Customer;
 use App\Services\CardTransactionService;
 use Illuminate\Http\Request;
 use Tymon\JWTAuth\Facades\JWTAuth;
-
 
 class CardTransactionController extends Controller
 {
@@ -27,18 +27,18 @@ class CardTransactionController extends Controller
     {
         $card = $this->cardTransaction->getCardByNumber($request->card_number, $this->user->id);
         
-        if (!$card) return response()->json(['message' => 'Card Not Found'], 404);
+        if (!$card) return response()->json(['message' => __('transaction/messages.card_not_found')], 404);
 
         $account = $card->account;
 
         $balance = $this->cardTransaction->hasEnoughBalance($account, $request->amount);
 
-        if (!$balance) return response()->json(['message' => 'Fondos insuficientes'], 400);
+        if (!$balance) return response()->json(['message' => __('transaction/messages.insufficient_funds')], 400);
 
         $transaction = $this->cardTransaction->createCardTransaction($account, $card->id, $request->validated());
 
         return response()->json([
-            'message' => 'Pago con tarjeta realizado correctamente',
+            'message' => __('transaction/messages.card_payment_success'),
             'transaction' => $transaction,
         ]);
     }
@@ -48,7 +48,7 @@ class CardTransactionController extends Controller
     {
         $card = $this->cardTransaction->getCardByNumber($request->card_number, $this->user->id);
 
-        if (!$card) return response()->json(['message' => 'Card Not Found'], 404);
+        if (!$card) return response()->json(['message' => __('transaction/messages.card_not_found')], 404);
 
         $transactions = $this->cardTransaction->getCardTransaction($card);
 

@@ -5,20 +5,11 @@ const AuthContext = createContext();
  
 export const AuthProvider = ({ children }) => { 
 
-    /** BUSCAR INFORMACION SOBRE HTTPS ONLY PARA MEJORAR LA SEGURIDAD */
-    /** UTILIZAR CUSTOM HOOK PARA LOS EFFECTS */
-
     const [user, setUser ] = useState(null);
     const [loading, setLoading] = useState(true); 
     const [needs2FA, setNeeds2FA] = useState(false);
 
     const isAuthenticated = !!user;
-
-
-    /**
-     * REVISAR NUEVOS CAMBIOS DE EMPLOYEE Y CUSTOMS ETC
-     * para deshabilitar 2fa hay que poner la password por seguridad
-     */
 
     useEffect(() => {
         const storedUser = sessionStorage.getItem('user');
@@ -57,21 +48,24 @@ export const AuthProvider = ({ children }) => {
     }
 
     const logout = async () => {
-        const response = await logoutService();
+        try {
+            const response = await logoutService();
+            return response;        
+        } catch (error) {
+            throw error;
+        }finally{
+            sessionStorage.removeItem('user');
+            sessionStorage.removeItem('token');
+            sessionStorage.removeItem('2fa_enabled');
+            setUser(null);
+        }
 
-        sessionStorage.removeItem('user');
-        sessionStorage.removeItem('token');
-        sessionStorage.removeItem('2fa_enabled');
-        setUser(null);
-
-        return response;        
     }
 
 
     const enable2FA = async () => {
         const response = await enable2FAService();
         console.log("response de enable", response);
-
 
         return response;
     }
@@ -130,7 +124,7 @@ export const useAuth = () => {
     const context = useContext(AuthContext);
 
     if (!context) {
-        throw new Error("useAuth debe estar dentro del proveedor AuthProvider"); // MODIFICAR MENSAJES
+        throw new Error("useAuth debe estar dentro del proveedor AuthProvider");
     } 
  
     return context;       

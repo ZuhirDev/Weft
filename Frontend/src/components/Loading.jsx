@@ -1,12 +1,9 @@
-import { useLoading } from '@/context/LoadingContext';
 import React from 'react'
 import { Skeleton } from './ui/skeleton';
 
-const Loading = () => {
+const Loading = ({ isOpen }) => {
 
-    const { isLoading } = useLoading();  
-
-    if (!isLoading) return null;
+    if (!isOpen) return null;
 
     return (
         <div className="w-screen h-screen bg-background text-muted-foreground flex flex-col">
@@ -37,14 +34,14 @@ const Loading = () => {
                     </div>
 
                     <div>
-                        <Skeleton className="h-64 w-full rounded-xl" />
+                        <Skeleton className="h-100 w-full rounded-xl" />
                     </div>
                     
                     <div className="w-full">
                     <div className="max-w-5xl mx-auto px-14">
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
-                        <Skeleton className="h-22 rounded-xl" />
-                        <Skeleton className="h-22 rounded-xl" />
+                        <Skeleton className="h-32 rounded-xl" />
+                        <Skeleton className="h-32 rounded-xl" />
                         </div>
                     </div>
                     </div>

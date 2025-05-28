@@ -21,7 +21,7 @@ export const registerService = async (data) => {
 }
 
 
-export const loginService = async (data) => { console.log("object", data)
+export const loginService = async (data) => {
     const { email, password } = data;
     try {
         const response = await post({
@@ -60,7 +60,7 @@ export const enable2FAService = async () => {
     }
 }
 
-export const verify2FAService = async (otp) => { console.log("otp", otp)
+export const verify2FAService = async (otp) => {
     try {
         const response = await post({
             url: '/2fa/verify',
