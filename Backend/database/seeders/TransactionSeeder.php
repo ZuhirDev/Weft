@@ -32,10 +32,11 @@ class TransactionSeeder extends Seeder
                 'origin_account_id' => $carlosAccount->id,
                 'destination_account_id' => $lauraAccount->id, 
                 'card_id' => null,
-                'reference' => Str::uuid()->toString(),
+                'reference' => Str::random(8),
                 'amount' => $faker->randomFloat(2, 10, 1000),
                 'status' => 'completed',
                 'concept' => $faker->sentence(),
+                'movement' => 'sent',
             ]);
 
             $card = $carlosAccount->cards()->first();
@@ -44,10 +45,11 @@ class TransactionSeeder extends Seeder
                 'origin_account_id' => null,
                 'destination_account_id' => null, 
                 'card_id' => $card->id,
-                'reference' => Str::uuid()->toString(),
+                'reference' => Str::random(8),
                 'amount' => $faker->randomFloat(2, 10, 1000),
                 'status' => 'completed',
                 'concept' => $faker->sentence(),
+                'movement' => 'received',
             ]);
         }
 
@@ -56,10 +58,11 @@ class TransactionSeeder extends Seeder
                 'origin_account_id' => $lauraAccount->id,
                 'external_destination_iban' => $faker->iban('ES'), 
                 'card_id' => null,
-                'reference' => Str::uuid()->toString(),
+                'reference' => Str::random(8),
                 'amount' => $faker->randomFloat(2, 10, 1000),
                 'status' => 'completed',
                 'concept' => $faker->sentence(),
+                'movement' => 'sent',
             ]);
 
             $card = $lauraAccount->cards()->first();
@@ -68,10 +71,11 @@ class TransactionSeeder extends Seeder
                 'origin_account_id' => null,
                 'destination_account_id' => null, 
                 'card_id' => $card->id,
-                'reference' => Str::uuid()->toString(),
+                'reference' => Str::random(8),
                 'amount' => $faker->randomFloat(2, 10, 1000),
                 'status' => 'completed',
                 'concept' => $faker->sentence(),
+                'movement' => 'received',
             ]);
         }
     }

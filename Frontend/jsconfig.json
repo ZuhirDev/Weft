@@ -10,6 +10,7 @@
       "@card/*": ["./src/modules/card/*"],
       "@transaction/*": ["./src/modules/transaction/*"],
       "@dashboard/*": ["./src/modules/dashboard/*"],
+      "@landing/*": ["./src/modules/landing/*"],
     }
   }
 }

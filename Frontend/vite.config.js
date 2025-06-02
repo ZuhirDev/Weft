@@ -16,6 +16,7 @@ export default defineConfig({
       "@card": path.resolve(__dirname, "./src/modules/card"),
       "@transaction": path.resolve(__dirname, "./src/modules/transaction"),
       "@dashboard": path.resolve(__dirname, "./src/modules/dashboard"),
+      "@landing": path.resolve(__dirname, "./src/modules/landing"),
     },
   },
 });

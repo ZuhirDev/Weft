@@ -8,21 +8,33 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser ] = useState(null);
     const [loading, setLoading] = useState(true); 
     const [needs2FA, setNeeds2FA] = useState(false);
+    const [is2FAEnabled, setIs2FAEnabled] = useState(false);
+    const [emailVerified, setEmailVerified] = useState(false);
 
     const isAuthenticated = !!user;
 
+    /**
+     * REVISAR LA CONFIG DEL USUARIO, PARA NO GUARDAR EN STORAGE 
+     * Y SOLO EN ESTADOS Y CUANDO REFRESCA HACER FETCH
+     */
+
+    /**
+     * CUANDO RECARGO LA PAGINA , SE PIERDE EL AUTH OTP
+     * EN BACKEND CUANDO HAGLO LOGIN/LOGOUT SE ACTUALIZA EL ENABLED DE BD
+     */
+
+
     useEffect(() => {
         const storedUser = sessionStorage.getItem('user');
+        const is2FAEnabledStored  = sessionStorage.getItem('2fa_enabled') === 'true';
+        const is2FAVerifiedStored  = sessionStorage.getItem('2fa_verified') === 'true';
 
-        if(sessionStorage.getItem('token') && storedUser){
-            setUser(JSON.parse(storedUser));
-        }
+        if(sessionStorage.getItem('token') && storedUser) setUser(JSON.parse(storedUser));
+        
         setLoading(false);
 
-        if((sessionStorage.getItem('2fa_enabled')) === 'true'){
-            setNeeds2FA(true);
-        }
-
+        setNeeds2FA(is2FAVerifiedStored);
+        setIs2FAEnabled(is2FAEnabledStored);
     }, []);
 
     const registerUser = async (data) => {
@@ -37,11 +49,14 @@ export const AuthProvider = ({ children }) => {
             if(response.status === 403 && response.token){
                 setNeeds2FA(true);
                 sessionStorage.setItem('2fa_enabled', true);
+                sessionStorage.setItem('2fa_verified', false);
             }
             sessionStorage.setItem('user', JSON.stringify(response.user));
             sessionStorage.setItem('token', response.token);
             setUser(response.user);
-            
+            setEmailVerified(response.user?.email_verified_at);
+
+            return response;
         } catch (error) {
             throw error;
         }
@@ -57,6 +72,7 @@ export const AuthProvider = ({ children }) => {
             sessionStorage.removeItem('user');
             sessionStorage.removeItem('token');
             sessionStorage.removeItem('2fa_enabled');
+            sessionStorage.removeItem('2fa_verified');
             setUser(null);
         }
 
@@ -64,10 +80,18 @@ export const AuthProvider = ({ children }) => {
 
 
     const enable2FA = async () => {
-        const response = await enable2FAService();
-        console.log("response de enable", response);
+        try {
+            const response = await enable2FAService();
+            console.log("response de enable", response);
+            sessionStorage.setItem('2fa_enabled', 'true');
 
-        return response;
+
+            return response;
+
+        } catch (error) {
+            throw error;
+        }
+        
     }
 
     const verify2FA = async (otp) => {
@@ -75,17 +99,26 @@ export const AuthProvider = ({ children }) => {
         const response = await verify2FAService(otp);
         console.log("verify2fa context", response);
 
-        sessionStorage.setItem('2fa_enabled', false);
+        sessionStorage.setItem('2fa_verified', 'false');
         sessionStorage.setItem('user', JSON.stringify(response.user));
         sessionStorage.setItem('token', response.token);
         setNeeds2FA(false);
+        setIs2FAEnabled(true);
         setUser(response.user);
+
+        return response
     }
 
     const disable2FA = async () => {
-        const response = await disable2FAService();
-        sessionStorage.removeItem('2fa_enabled');
-        setNeeds2FA(false);
+        try {
+            const response = await disable2FAService();
+            sessionStorage.removeItem('2fa_enabled');
+            sessionStorage.removeItem('2fa_verified');
+            setNeeds2FA(false);
+            setIs2FAEnabled(false);            
+        } catch (error) {
+            throw error;
+        }
     }
 
     const passwordVerification = async (data) => {
@@ -111,6 +144,8 @@ export const AuthProvider = ({ children }) => {
         disable2FA,
         passwordVerification,
         loading,
+        is2FAEnabled,
+        emailVerified
     }
 
     return(

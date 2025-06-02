@@ -1,20 +1,23 @@
 import React from 'react';
 import { createBrowserRouter } from 'react-router-dom';
-import RootLayout from '@/layouts/RootLayout';
 import NotFoundPage from '@error/pages/NotFoundPage';
 import authRouter from '@auth/routes/router';
-import userRouter from '@user/routes/router';
+import {publicUserRoutes, protectedUserRoutes } from '@user/routes/router';
 import accountRouter from '@account/routes/router';
 import cardRouter from '@card/routes/router';
 import DashboardRouter from '@dashboard/routes/router'
 import transactionRouter from '@transaction/routes/router';
-import LandingPage from '@/pages/LandingPage';
-
+import LandingPage from '@landing/pages/LandingPage';
+import MAIN_ROUTES from './path';
+import InvestmentPage from '@/modules/investment/pages/InvestmentPage';
+import PublicLayout from '@/layouts/PublicLayout';
+import ProtectedLayout from '@/layouts/ProtectedLayout';
 
 const router = createBrowserRouter([
+
     {
         path: '/',
-        element: <RootLayout />,
+        element: <PublicLayout />,
         errorElement: <NotFoundPage />,
         children: [
             {
@@ -22,13 +25,33 @@ const router = createBrowserRouter([
                 element: <LandingPage />,
             },
 
-            ...accountRouter,
             ...authRouter,
+            ...publicUserRoutes,
+
+        ]
+    },
+    
+    {
+        path: '',
+        element: <ProtectedLayout />,
+        errorElement: <NotFoundPage />,
+        children: [
+            ...accountRouter,
             ...cardRouter,
             ...DashboardRouter,
             ...transactionRouter,
-            ...userRouter,
+            ...protectedUserRoutes,
+
+            {
+                path: MAIN_ROUTES.INVESTMENT,
+                element: <InvestmentPage />
+            }
         ]
+    },
+
+    {
+        path: '*',
+        element: <NotFoundPage />
     }
 ]);
 

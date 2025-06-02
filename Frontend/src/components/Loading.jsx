@@ -1,9 +1,23 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Skeleton } from './ui/skeleton';
 
 const Loading = ({ isOpen }) => {
 
-    if (!isOpen) return null;
+  const [showLoading, setShowLoading] = useState(false);
+
+    useEffect(() => {
+        if (isOpen) {
+        const timer = setTimeout(() => setShowLoading(true), 100);
+        return () => {
+            clearTimeout(timer);
+            setShowLoading(false);
+        };
+        } else {
+        setShowLoading(false);
+        }
+    }, [isOpen]);
+
+    if (!showLoading) return null;
 
     return (
         <div className="w-screen h-screen bg-background text-muted-foreground flex flex-col">

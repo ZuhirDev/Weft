@@ -10,9 +10,6 @@ const SendVerifyEmail = () => {
 
   const handleSendVerifyEmail = async () => {
     const response = await sendVerifyEmail();
-
-
-
   }
 
   return (

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Models\User;
+use App\Services\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -15,6 +16,15 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
 {
+
+    protected $userService;
+
+    public function __construct(UserService $userService)
+    {
+        $this->userService = $userService;
+    }
+
+
     /**
      * Registers a new user with email and password.
      * Returns the created user data in the response.
@@ -24,14 +34,10 @@ class AuthController extends Controller
      */
     public function register(RegisterRequest $request) 
     {
-        $user = User::create([
-            "email" => $request->email,
-            "password" => Hash::make($request->password),
-        ]);
+        $user = $this->userService->createUser($request->validated());
 
         return response()->json([
-            "status" => true,
-            "message" =>  __('auth.registration_successful', ['name' => $user->email]), /// PONER EL NOMBRE
+            "message" =>  __('auth.registration_successful', ['name' => $user->email]),
             "data" => $user,
         ], 201);
     }

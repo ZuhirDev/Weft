@@ -1,5 +1,5 @@
 import MAIN_ROUTES from "@/routes/path";
-import { CreditCardIcon, LayoutDashboardIcon, SendIcon, WalletIcon } from "lucide-react";
+import { CreditCardIcon, LayoutDashboardIcon, SendIcon, TrendingUpIcon, WalletIcon } from "lucide-react";
 
 const NavItems = [
     {
@@ -21,6 +21,11 @@ const NavItems = [
       title: "Transactions",
       url: MAIN_ROUTES.TRANSACTION,
       icon: SendIcon,
+    },
+    {
+      title: "Investments",
+      url: MAIN_ROUTES.INVESTMENT,
+      icon: TrendingUpIcon,
     },
 ];
 

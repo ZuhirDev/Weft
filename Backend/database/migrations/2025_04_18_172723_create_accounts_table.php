@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('accounts', function (Blueprint $table) {
             $table->id();
 
-            $table->string('alias')->nullable();
+            $table->string('alias');
             $table->string('iban', 32)->unique();
             $table->decimal('balance', 15, 2)->default(0.00);
             $table->string('swift', 11);

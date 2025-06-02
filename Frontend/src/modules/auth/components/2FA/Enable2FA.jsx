@@ -21,8 +21,6 @@ const Enable2FA = () => {
     const [copied, setCopied] = useState(false);
     const [isEnabled, setIsEnabled] = useState(false);
 
-    console.log("enabled", isEnabled) 
-
     const handleCopy = async () => {
         try {
             await navigator.clipboard.writeText(secret);
@@ -50,6 +48,7 @@ const Enable2FA = () => {
     const handleClose = () => {
         setNeeds2FA(true);
         sessionStorage.setItem('2fa_enabled', true);
+        sessionStorage.setItem('2fa_verified', true);
         setIsEnabled(false); 
     };
 

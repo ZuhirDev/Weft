@@ -30,7 +30,7 @@ class CardSeeder extends Seeder
         if($carlosAccount){
             Card::create([
                 'account_id' => $carlosAccount->id,
-                'alias' => $faker->word(),
+                'alias' => 'Compras',
                 'card_number' => $faker->numerify('################'),
                 'cvv' => $faker->numberBetween(100, 999),
                 'expiration_date' => now()->addYears(5),
@@ -43,6 +43,7 @@ class CardSeeder extends Seeder
         if($lauraAccount){
             Card::create([
                 'account_id' => $lauraAccount->id,
+                'alias' => 'Compras',
                 'card_number' => $faker->creditCardNumber(),
                 'cvv' => $faker->numberBetween(100, 999),
                 'expiration_date' => now()->addYears(5),

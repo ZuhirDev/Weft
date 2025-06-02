@@ -1,4 +1,4 @@
-import { get, post } from '@/utils/xhr';
+import { get, post, put } from '@/utils/xhr';
 
 
 export const meService = async () => {
@@ -77,6 +77,62 @@ export const verifyEmailService = async (url) => {
     try {
         const response = await get({
             url: url
+        });
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}
+
+export const getCustomerService = async () => {
+    try {
+        const response = await get({ url: '/customer' });
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}
+
+export const createCustomerService = async (data) => {
+    const { email, password, password_confirmation, name, last_name, dni, date_of_birth, gender, phone, address, occupation, avatar } = data;
+    try {
+        const response = await post({
+            url: 'customer/create',
+            data: {
+                email,
+                password, 
+                password_confirmation,
+                name,
+                last_name,
+                dni, 
+                date_of_birth,
+                gender,
+                phone,
+                address,
+                occupation,
+                avatar,
+            }
+        });
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}
+export const updateCustomerService = async (data) => {
+    const { email, name, last_name, gender, phone, address, occupation, avatar } = data;
+    try {
+        const response = await put({
+            url: 'customer/update',
+            data: {
+                email,
+                name,
+                last_name,
+                gender,
+                phone,
+                address,
+                occupation,
+                avatar,
+            }
         });
         return response.data;
     } catch (error) {

@@ -16,7 +16,7 @@ class Customer extends Model
         'last_name',
         'date_of_birth',
         'gender',
-        'DNI',
+        'dni',
         'phone',
         'address',
         'occupation',

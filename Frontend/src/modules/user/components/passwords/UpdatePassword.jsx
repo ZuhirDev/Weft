@@ -2,10 +2,11 @@ import FormInput from '@/components/FormInput';
 import { Button } from '@/components/ui/button';
 import { zodResolver } from '@hookform/resolvers/zod';
 import React from 'react';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { useUser } from '@user/context/UserContext';
 import { useTranslation } from 'react-i18next';
+import { PasswordInput } from '@/components/ui/password-input';
 
 
 const UpdatePassword = () => {
@@ -20,7 +21,7 @@ const UpdatePassword = () => {
         path:['password_confirmation'], message: t('validation:password.mismatch'),
     });
     const { updatePassword } = useUser();
-    const { handleSubmit, register, reset, setError, formState: { errors, isSubmitting } } = useForm({
+    const { handleSubmit, register, reset, setError, control, formState: { errors, isSubmitting } } = useForm({
         resolver: zodResolver(updatePasswordSchema),
     });
 
@@ -30,10 +31,7 @@ const UpdatePassword = () => {
             const response = await updatePassword(data);
             reset();
         } catch (error) {
-            // console.log("error en updatepassword", error.response?.data);
             const { errors: responseErrors, message: generalMessage } = error.response?.data;
-
-            console.log("responseErrors", responseErrors, "*****", generalMessage);
 
             if(responseErrors) {
                 Object.keys(responseErrors).forEach((key) => {
@@ -51,19 +49,27 @@ const UpdatePassword = () => {
     }
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-gray-100">
+        <div className="flex items-center justify-center ">
             <form onSubmit={handleSubmit(onSubmit)} className="bg-white p-8 rounded-lg shadow-lg w-full max-w-sm">
                 <h2 className="text-2xl font-semibold text-center mb-6">{ t('auth:update_password') }</h2>
 
                 <div className="mb-4">
-                    <FormInput
+
+                    <Controller
                         name="current_password"
-                        type="password"
-                        register={register}
+                        control={control}
                         disabled={isSubmitting}
-                        placeholder={t('auth:current_password')}
-                        error={errors.current_password}
+                        render={({ field }) => {
+                        return <PasswordInput 
+                            {...field}
+                            placeholder={t('auth:current_password')}
+                        />
+                        }}
                     />
+
+                    {errors.current_password && (
+                        <p className="text-sm text-red-500 m-2">{errors.current_password.message}</p>
+                    )}
                 </div>
 
                 <div className="mb-4">

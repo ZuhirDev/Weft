@@ -15,7 +15,7 @@ const Logout = ({ className }) => {
   const handleLogout = async () => {
     try {
       const response = await logout();
-      console.log("logoutpage", response);
+      console.clear()
       navigate(AUTH_ROUTES.HOME);
     } catch (error) {
       console.log("Error", error);

@@ -9,16 +9,12 @@ import { useNavigate } from 'react-router-dom';
 import AUTH_ROUTES from '@auth/routes/paths';
 import { useTranslation } from 'react-i18next';
 
-
-
-
 /** VERIFICAR LA PASSOWRD CONFIRMATION  */
 
 const RegisterPage = () => {
 
     const { t } = useTranslation();
     const registerSchema = z.object({
-        // name: z.string().min(1, "Name is required"),
         email: z.string().email(t('validation:email')),
         password: z.string().min(8, t('validation:password.min', { min: 8 })),
         password_confirmation: z.string().min(8, t('validation:password.min', { min: 8 })),

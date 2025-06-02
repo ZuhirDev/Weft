@@ -59,6 +59,7 @@ class AccountController extends Controller
 
     public function store(StoreRequest $request)
     {
+        dd("aaaa");
         $account = $this->accountService->createAccount($this->user->id, $request->validated());
 
         if(!$account) return response()->json(['message' => __('account/messages.account_creation_failed')]);

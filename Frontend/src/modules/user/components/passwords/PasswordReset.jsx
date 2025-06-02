@@ -2,13 +2,17 @@ import FormInput from '@/components/FormInput';
 import { Button } from '@/components/ui/button';
 import { zodResolver } from '@hookform/resolvers/zod';
 import React from 'react';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { useUser } from '@user/context/UserContext';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-
-
+import { Card, CardContent } from '@/components/ui/card';
+import { ArrowLeft } from 'lucide-react';
+import { toast } from 'sonner';
+import AUTH_ROUTES from '@/modules/auth/routes/paths';
+import { Label } from '@/components/ui/label';
+import { PasswordInput } from '@/components/ui/password-input';
 
 const PasswordReset = () => {
 
@@ -26,7 +30,7 @@ const PasswordReset = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const params = new URLSearchParams(location.search);
-    const { handleSubmit, register, reset, formState: { errors, isSubmitting } } = useForm({
+    const { handleSubmit, register, reset, setError, control, formState: { errors, isSubmitting } } = useForm({
         resolver: zodResolver(passwordResetSchema),
     });
 
@@ -38,8 +42,10 @@ const PasswordReset = () => {
     const onSubmit = async (data) => {
 
         try {
-            await passwordReset(data);
+            const response = await passwordReset(data);
+            toast.success(response?.message);
             reset();
+            navigate(AUTH_ROUTES.LOGIN);
         } catch (error) {
 
             const { errors: responseErrors, message: generalMessage } = error.response?.data;
@@ -59,74 +65,121 @@ const PasswordReset = () => {
         }
     }
 
-    return (
-        <div className="flex items-center justify-center min-h-screen bg-gray-100">
-            <form onSubmit={handleSubmit(onSubmit)} className="bg-white p-8 rounded-lg shadow-lg w-full max-w-sm">
-                <h2 className="text-2xl font-semibold text-center mb-6">Reset Password</h2>
+return (
+    <div className="flex items-center justify-center min-h-screen bg-background relative overflow-hidden">
+        <div className="absolute inset-0 -z-10 bg-[radial-gradient(45%_40%_at_50%_60%,hsl(var(--primary)/15%)_0,transparent_100%)]" />
+        <div className="absolute -top-40 -left-40 h-80 w-80 rounded-full bg-primary/20 blur-3xl" />
+        <div className="absolute -bottom-40 -right-40 h-80 w-80 rounded-full bg-primary/20 blur-3xl" />
 
-                <div className="mb-4">
-                    <FormInput
-                        name="token"
-                        type="text"
-                        register={register}
-                        disabled={isSubmitting}
-                        hidden={true}
-                        value={data.token}
-                        placeholder="Token"
-                        error={errors.token}
-                    />
-                </div>
+        <Card className="w-full max-w-lg overflow-hidden border-primary/10 bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+            <CardContent className="p-8 md:p-12">
+                <Link 
+                    to="/login" 
+                    className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors mb-8"
+                >
+                <ArrowLeft className="h-4 w-4" />
+                    Back to login
+                </Link>
 
-                <div className="mb-4">
-                    <FormInput
-                        name="email"
-                        type="email"
-                        register={register}
-                        disabled={true}
-                        placeholder="Email"
-                        value={data.email}
-                        error={errors.email}
-                    />
-                </div>
+                <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-8">
+                    <div className="flex flex-col items-center gap-2 text-center">
+                        <h2 className="text-2xl font-bold tracking-tight">
+                            Reset Your Password
+                        </h2>
+                        <p className="text-sm text-muted-foreground max-w-sm">
+                            Create a new password for your account
+                        </p>
+                    </div>
 
-                <div className="mb-4">
-                    <FormInput
-                        name="password"
-                        type="password"
-                        register={register}
-                        disabled={isSubmitting}
-                        placeholder="Password"
-                        error={errors.password}
-                    />
-                </div>
+                    <div className="space-y-4">
+                        <FormInput
+                            name="token"
+                            type="hidden"
+                            register={register}
+                            disabled={isSubmitting}
+                            value={data.token}
+                            error={errors.token}
+                        />
 
-                <div className="mb-4">
-                    <FormInput
-                        name="password_confirmation"
-                        type="password"
-                        register={register}
-                        disabled={isSubmitting}
-                        placeholder="Confirm password"
-                        error={errors.password_confirmation}
-                    />
-                </div>
+                        <div className="grid gap-1">
+                            <Label htmlFor="email" className="text-sm font-medium">
+                                Email
+                            </Label>
+                            <FormInput
+                                name="email"
+                                type="email"
+                                register={register}
+                                disabled={true}
+                                placeholder="Email"
+                                defaultValue={data.email}
+                                error={errors.email}
+                                className="rounded-lg bg-muted/50"
+                            />
+                        </div>
 
-                {errors.root && (
-                    <p className="text-sm text-red-500 m-2">{errors.root.message}</p>
-                )}
+                        <div className="grid gap-1">
+                            <Label htmlFor="password" className="text-sm font-medium">
+                                New Password
+                            </Label>
+                            <Controller
+                                name="password"
+                                control={control}
+                                render={({ field }) => (
+                                <PasswordInput
+                                    {...field}
+                                    id="password"
+                                    className="rounded-lg bg-muted/50"
+                                    placeholder="Create a strong password"
+                                />
+                                )}
+                            />
 
-                <div className="flex justify-center">
+                            {errors.password && (
+                                <p className="text-sm text-red-500 mt-1">{errors.password.message}</p>
+                            )}
+                        </div>
+
+                        <div className="grid gap-1">
+                            <Label htmlFor="password_confirmation" className="text-sm font-medium">
+                                Confirm New Password
+                            </Label>
+                            <Controller
+                                name="password_confirmation"
+                                control={control}
+                                render={({ field }) => (
+                                <PasswordInput
+                                    {...field}
+                                    id="password_confirmation"
+                                    className="rounded-lg bg-muted/50"
+                                    placeholder="Re-enter your new password"
+                                />
+                                )}
+                            />
+
+                            {errors.password_confirmation && (
+                                <p className="text-sm text-red-500 mt-1">{errors.password_confirmation.message}</p>
+                            )}
+                        </div>
+
+                        {errors.root && (
+                            <p className="text-sm text-red-500 mt-1">{errors.root.message}</p>
+                        )}
+                    </div>
+
                     <Button
                         disabled={isSubmitting}
-                        variant="outline"
-                        className="w-full p-3 bg-primary text-white rounded-lg hover:bg-primary-dark focus:outline-none"
+                        type="submit"
+                        className="w-full rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground py-6"
+                        size="lg"
                     >
-                        {isSubmitting ? 'Loading' : 'Reset Password'}
+                        {isSubmitting ? 'Loading...' : 'Reset Password'}
                     </Button>
-                </div>
-            </form>
-        </div>
-    );
+                </form>
+            </CardContent>
+        </Card>
+    </div>
+);
+
 }
 
 export default PasswordReset;

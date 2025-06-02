@@ -6,13 +6,17 @@ import SendVerifyEmail from '@user/components/mails/SendVerifyEmail';
 import VerifyEmail from '@user/components/mails/VerifyEmail';
 import MePage from "@user/pages/MePage";
 import ProtectedRoutes from "@/routes/ProtectedRoutes";
+import UserPage from "../pages/UserPage";
 
-
-const router = [
+export const protectedUserRoutes  = [
 
     {
         element: <ProtectedRoutes />,
         children: [
+            {
+                path: USER_ROUTES.USER,
+                element: <UserPage />,
+            },
             {
                 path: USER_ROUTES.ME,
                 element: <MePage />,
@@ -34,17 +38,15 @@ const router = [
             },
         ]
     },
-
-    {
-        path: USER_ROUTES.FORGOT_PASSWORD,
-        element: <ForgotPassword />,
-    },
-
-    {
-        path: USER_ROUTES.PASSWORD_RESET,
-        element: <PasswordReset />,
-    },
-
 ];
 
-export default router;
+export const publicUserRoutes = [
+  {
+    path: USER_ROUTES.FORGOT_PASSWORD,
+    element: <ForgotPassword />,
+  },
+  {
+    path: USER_ROUTES.PASSWORD_RESET,
+    element: <PasswordReset />,
+  },
+];

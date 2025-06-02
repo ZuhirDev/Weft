@@ -4,6 +4,7 @@ const MAIN_ROUTES = {
     ACCOUNT: '/account',
     CARD: '/card',
     TRANSACTION: '/transaction',
+    INVESTMENT: '/investment',
     NOTIFICATIONS: '/notification',
 }
 

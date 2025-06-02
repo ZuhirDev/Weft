@@ -47,11 +47,14 @@ class AccountService
 
     public function getAccountWithTrashed(int $customerId, string $iban): ?Account
     {
-        return Account::where('customer_id', $customerId)
-                        ->where('iban', $iban)
-                        ->withTrashed()
-                        ->first();
+        return Account::withTrashed()
+            ->where('iban', $iban)
+            ->whereHas('customers', function ($query) use ($customerId) {
+                $query->where('customers.id', $customerId);
+            })
+            ->first();
     }
+
     
     public function getFormattedHolders(Account $account): array
     {
@@ -98,7 +101,7 @@ class AccountService
             'type' => $data['type'] ?? 'checking',
         ]);
 
-        $account->customers()->attach($customerId, ['role', 'primary']);
+        $account->customers()->attach($customerId, ['role' =>  'primary']);
 
         return $account;
     }

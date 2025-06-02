@@ -17,6 +17,10 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install gd zip pdo pdo_mysql intl bcmath opcache
 
+
+RUN docker-php-ext-install pcntl
+RUN docker-php-ext-configure pcntl --enable-pcntl
+
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # CREAR USUARIO PARA EVITAR PROBLEMAS DE PERMISOS DENTRO DEL CONTENEDOR

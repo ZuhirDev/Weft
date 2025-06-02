@@ -47,10 +47,23 @@ class Transaction extends Model
         $accountIds = $customer->accounts()->pluck('accounts.id');
         $cardIds = Card::whereIn('account_id', $accountIds)->pluck('id');
 
-        return $query->where(function ($q) use ($accountIds, $cardIds) {
+        // return $query->where(function ($q) use ($accountIds, $cardIds) {
+        //     $q->whereIn('origin_account_id', $accountIds)
+        //     ->orWhereIn('destination_account_id', $accountIds)
+        //     ->orWhereIn('card_id', $cardIds);
+        // });
+
+    return $query->select('transactions.*', 
+            'origin_accounts.alias as origin_account_alias',
+            'destination_accounts.iban as destination_account_alias',
+            'cards.alias as card_alias'
+        )
+        ->leftJoin('accounts as origin_accounts', 'transactions.origin_account_id', '=', 'origin_accounts.id')
+        ->leftJoin('accounts as destination_accounts', 'transactions.destination_account_id', '=', 'destination_accounts.id')
+        ->leftJoin('cards', 'transactions.card_id', '=', 'cards.id')
+        ->where(function ($q) use ($accountIds, $cardIds) {
             $q->whereIn('origin_account_id', $accountIds)
-            ->orWhereIn('destination_account_id', $accountIds)
-            ->orWhereIn('card_id', $cardIds);
-        });
-    }
+              ->orWhereIn('destination_account_id', $accountIds)
+              ->orWhereIn('card_id', $cardIds);
+        });    }
 }

@@ -46,7 +46,6 @@ class AccountTransactionController extends Controller
 
         return response()->json([
             'message' => __('transaction/messages.deposit_success'),
-            'messages' => $message,
             'transaction' => $transaction,
         ]);
     }
@@ -143,6 +142,8 @@ class AccountTransactionController extends Controller
         $customer = Customer::find($this->user->id);
 
         $table = Transaction::AllCustomerTransactions($customer);
+
+            //   dd($table->limit(1)->get());
 
         return Datatable::of($table)
                           ->toResponse();

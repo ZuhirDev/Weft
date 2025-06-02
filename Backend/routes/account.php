@@ -1,8 +1,11 @@
 <?php
 
 use App\Http\Controllers\Account\AccountTransactionController;
-use App\Http\Controllers\AccountController;
+use App\Http\Controllers\Account\AccountController;
+use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
+
+
 
 Route::middleware(['auth:api', '2fa'])->group(function(){
 
@@ -17,6 +20,7 @@ Route::middleware(['auth:api', '2fa'])->group(function(){
 
 
 
+    Route::get('account/all', [AccountController::class, 'getAllAccountsInfo']);
     Route::post('account/transaction/deposit', [AccountTransactionController::class, 'deposit']);
     Route::post('account/transaction/withdraw', [AccountTransactionController::class, 'withdraw']);
     Route::post('account/transaction/transfer', [AccountTransactionController::class, 'transfer']);

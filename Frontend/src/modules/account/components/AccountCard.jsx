@@ -1,73 +1,102 @@
 import React from 'react';
+import { Lock, Landmark } from 'lucide-react';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { useAccount } from '../context/AccountContext';
+import VisibilityWrapper from '@/components/VisibilityWrapper';
 
-import { Landmark, Lock, ChevronRight } from "lucide-react";
-import { cn } from "@/lib/utils";
+const AccountCard = () => {
+  const { selectedAccount } = useAccount();
 
-
-const AccountCard = ({ account, isSelected, onClick }) => {
-    const isBlocked = account.status === 'blocked';
+  if (!selectedAccount) {
     return (
-        <div
-        className={cn(
-            "relative cursor-pointer overflow-hidden rounded-xl border transition-all hover:shadow-md",
-            isSelected ? "ring-2 ring-black" : "",
-            isBlocked ? "opacity-80" : "",
-        )}
-        onClick={onClick}
-        >
-            <div className="bg-white p-5">
-                <div className="mb-4 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100">
-                    {isBlocked ? (
-                        <Lock className="h-5 w-5 text-gray-500" />
-                    ) : (
-                        <Landmark className="h-5 w-5 text-gray-500" />
-                    )}
-                    </div>
-                    <div>
-                    <h3 className="font-medium">{account.alias}</h3>
-                    <p className="text-sm text-gray-500">Cuenta {account.type}</p>
-                    </div>
-                </div>
-                <ChevronRight className="h-5 w-5 text-gray-400" />
-                </div>
-
-                <div className="space-y-3">
-                <div>
-                    <p className="text-xs text-gray-500">SALDO DISPONIBLE</p>
-                    <p className="text-xl font-medium">
-                    {new Intl.NumberFormat("es-ES", { style: "currency", currency: 'EUR' }).format(
-                        account.balance,
-                    )}
-                    </p>
-                </div>
-
-                <div className="flex justify-between text-sm">
-                    <div>
-                    <p className="text-gray-500">IBAN</p>
-                    <p className="font-mono">
-                        {account.iban.substring(0, 4)}...{account.iban.substring(account.iban.length - 4)}
-                    </p>
-                    </div>
-                    <div className="text-right">
-                    <p className="text-gray-500">TITULARES</p>
-                    <p>{account.holders.length}</p>
-                    </div>
-                </div>
-                </div>
-            </div>
-
-            {isBlocked && (
-                <div className="absolute inset-0 flex items-center justify-center bg-white/80">
-                <div className="flex items-center gap-2 rounded-full bg-gray-100 px-4 py-2">
-                    <Lock className="h-4 w-4" />
-                    <span className="text-sm font-medium">BLOQUEADA</span>
-                </div>
-                </div>
-            )}
+      <div className="w-full h-64 flex items-center justify-center">
+        <div className="animate-pulse flex flex-col items-center gap-4">
+          <div className="h-12 w-12 rounded-full bg-gray-200 animate-pulse"></div>
+          <div className="h-4 w-48 bg-gray-200 rounded animate-pulse"></div>
         </div>
-    )
-}
+      </div>
+    );
+  }
 
-export default AccountCard
+  return (
+    <Card className="relative overflow-hidden bg-gradient-to-br from-gray-900 via-black to-gray-800 shadow-xl">
+      {/* Decorative elements */}
+      <div className="absolute inset-0 opacity-30">
+        <div className="absolute top-0 -right-20 w-40 h-40 bg-purple-500/20 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 -left-20 w-40 h-40 bg-blue-500/20 rounded-full blur-3xl"></div>
+      </div>
+
+      <CardHeader className="relative z-10">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="bg-gradient-to-br from-white/30 to-white/10 backdrop-blur-xl p-3 rounded-2xl shadow-inner">
+              {selectedAccount.status === 'blocked' ? (
+                <Lock className="h-6 w-6 text-white" />
+              ) : (
+                <Landmark className="h-6 w-6 text-white" />
+              )}
+            </div>
+            <div className="space-y-1">
+              <CardTitle className="text-xl font-bold text-white">
+                {selectedAccount.alias}
+              </CardTitle>
+              <p className="text-white/70 text-sm font-medium">
+                Cuenta {selectedAccount.type}
+              </p>
+            </div>
+          </div>
+        </div>
+      </CardHeader>
+
+      <CardContent className="relative z-10 space-y-8">
+        <div className="space-y-2">
+          <p className="text-xs font-medium text-white/60 tracking-wider">
+            SALDO DISPONIBLE
+          </p>
+<div className="text-4xl font-bold text-white">
+  <VisibilityWrapper>
+    {new Intl.NumberFormat('es-ES', {
+      style: 'currency',
+      currency: 'EUR',
+      minimumFractionDigits: 2,
+    }).format(selectedAccount.balance)}
+  </VisibilityWrapper>
+</div>
+
+        </div>
+
+        <div className="grid grid-cols-2 gap-8 pt-4 border-t border-white/10">
+          <div className="space-y-2">
+            <p className="text-xs font-medium text-white/60 tracking-wider">
+              IBAN
+            </p>
+            <p className="font-mono text-sm text-white/90 tracking-wider break-all">
+              {selectedAccount.iban}
+            </p>
+          </div>
+          <div className="space-y-2 text-right">
+            <p className="text-xs font-medium text-white/60 tracking-wider">
+              TITULARES
+            </p>
+            <p className="text-2xl font-bold text-white/90">
+              {selectedAccount.holders.length}
+            </p>
+          </div>
+        </div>
+      </CardContent>
+
+      {selectedAccount.status === 'blocked' && (
+        <div className="absolute inset-0 flex items-center justify-center bg-black/80 backdrop-blur-sm z-20">
+          <div className="flex items-center gap-3 bg-white/10 backdrop-blur-xl px-6 py-3 rounded-2xl border border-white/20">
+            <Lock className="h-5 w-5 text-white" />
+            <span className="text-sm font-medium text-white tracking-wider">
+              CUENTA BLOQUEADA
+            </span>
+          </div>
+        </div>
+      )}
+    </Card>
+  );
+};
+
+export default AccountCard;
