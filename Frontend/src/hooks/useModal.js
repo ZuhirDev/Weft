@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react'
+import { useCallback, useState } from 'react'
 
 const useModal = () => {
 
@@ -8,8 +8,6 @@ const useModal = () => {
     const close = useCallback(() => setIsOpen(false), []);
 
     return { isOpen, open, close };
-
-
 }
 
 export default useModal

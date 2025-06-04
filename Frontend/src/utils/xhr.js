@@ -18,7 +18,6 @@ const getAuthToken = () => {
 
 axios.interceptors.request.use(
     (config) => {
-        console.log("solicitud", config);
 
         const token = getAuthToken();
 

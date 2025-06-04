@@ -9,25 +9,31 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { UploadCloud, User } from 'lucide-react';
 import { useUser } from '../context/UserContext';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
+import { DatePickerCustom } from '@/components/ui/DatePicker';
+import { toast } from 'sonner';
+import { useAuth } from '@/modules/auth/context/AuthContext';
 
-
-/***
- * REVISAR LOS NULLLLLLSSSSS
- */
 
 const UserUpdate = () => {
 
     const { t } = useTranslation();
-    const { updateCustomer, user } = useUser();
+    const { updateCustomer } = useAuth();
+    const { user } = useAuth();
     const userUpdateSchema = z.object({
-        email: z.string().email(t('validation:email')).optional().or(z.literal('')),
-        name: z.string().optional(),
-        last_name: z.string().max(100, t('validation:max_length', { max: 100 })).optional(),
-        gender: z.enum(['male', 'female', 'unspecified']).optional(),
-        phone: z.string().max(15, t('validation:max_length', { max: 15 })).optional(),
-        address: z.string().max(100, t('validation:max_length', { max: 100 })).optional(),
-        occupation: z.string().max(100, t('validation:max_length', { max: 100 })).nullable().optional(),
+      email: z.string().email(t('validation:email')),
+      name: z.string().optional(),
+      last_name: z.string().max(100, t('validation:max_length', { max: 100 })).optional(),
+      dni: z.string().optional(),
+      date_of_birth: z.date().nullable().optional(),
+      gender: z.enum(['male', 'female', 'unspecified']).optional(),
+      phone: z.string().max(15, t('validation:max_length', { max: 15 })).optional(),
+      address: z.string().max(100, t('validation:max_length', { max: 100 })).optional(),
+      occupation: z.string().max(100, t('validation:max_length', { max: 100 })).nullable().optional(),
+      avatar: z.string().url().optional(),
     });
+
+    if(!user) return;
 
     const { handleSubmit, register, reset, setError, control, formState: { errors, isSubmitting, dirtyFields } } = useForm({
         resolver: zodResolver(userUpdateSchema),
@@ -35,15 +41,16 @@ const UserUpdate = () => {
             email:  user.email || '',
             name:  user.name || '',
             last_name:  user.last_name || '',
+            dni:  user.dni || '',
+            date_of_birth: user.date_of_birth ? new Date(user.date_of_birth) : null,
             gender:  user.gender || '',
             phone:  user.phone || '',
             address:  user.address || '',
             occupation:  user.occupation || '',
-            avatar:  user.avatar || '',            
         }
     });
 
-    const onSubmit = async (data) => { console.log("Data", data)
+    const onSubmit = async (data) => {
 
         const changedFields = {};
 
@@ -51,14 +58,23 @@ const UserUpdate = () => {
             changedFields[field] = data[field];
         });
 
-        console.log("aaaaaa", changedFields)
-
         try {
             const response = await updateCustomer(changedFields);
-            console.log("response", response)
-            reset();
+            toast.success(response?.message);
+
+            reset({
+              email: response.user.email || '',
+              name: response.user.name || '',
+              last_name: response.user.last_name || '',
+              dni: response.user.dni || '',
+              gender: response.user.gender || '',
+              phone: response.user.phone || '',
+              address: response.user.address || '',
+              occupation: response.user.occupation || '',
+              date_of_birth: response.user.date_of_birth ? new Date(response.user.date_of_birth) : null,
+            });
+
         } catch (error) {
-            console.log("error register", error);
             const { errors: responseErrors, message: generalMessage } = error.response?.data;
 
             if(responseErrors) {
@@ -77,140 +93,150 @@ const UserUpdate = () => {
     }
 
     return (
-     <div className="">
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="max-w-xl mx-auto p-6 bg-white rounded-lg shadow-md space-y-6"
-      >
-        <h1 className="text-3xl font-semibold text-gray-800 flex items-center gap-3">
-          <User className="w-8 h-8 text-blue-600" />
-          Acualizar perfil
-        </h1>
+<div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+  <div className="border-b pb-6 mb-8">
+    <h2 className="text-xl font-semibold text-foreground">Update Information</h2>
+    <p className="text-sm text-muted-foreground">
+      Keep your profile up to date to ensure accurate information.
+    </p>
+  </div>
 
-        <div className="flex flex-col items-center space-y-3">
-          <Avatar className="w-24 h-24">
-            <AvatarImage src="https://i.pravatar.cc/150?img=3" />
-            <AvatarFallback className="text-4xl bg-gray-200 text-gray-500">U</AvatarFallback>
-          </Avatar>
-          <Button type="button" variant="outline" className="flex items-center gap-2" disabled>
-            <UploadCloud className="w-5 h-5" />
-            cambiar foto
-          </Button>
-        </div>
+  <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+      <div className="space-y-1">
+        <Label htmlFor="name" className="text-sm font-medium text-foreground">First Name</Label>
+        <FormInput
+          name="name"
+          type="text"
+          register={register}
+          disabled={isSubmitting}
+          placeholder="Enter your first name"
+          error={errors.name}
+          className="w-full rounded-lg bg-muted/50 dark:bg-muted-dark/50"
+        />
+      </div>
 
-        <div>
-          <FormInput
-            name="email"
-            type="email"
-            register={register}
-            disabled={isSubmitting}
-            placeholder={t('auth:email', 'Correo electrónico')}
-            error={errors.email}
-          />
-        </div>
+      <div className="space-y-1">
+        <Label htmlFor="last_name" className="text-sm font-medium text-foreground">Last Name</Label>
+        <FormInput
+          name="last_name"
+          type="text"
+          register={register}
+          disabled={isSubmitting}
+          placeholder="Enter your last name"
+          error={errors.last_name}
+          className="w-full rounded-lg bg-muted/50 dark:bg-muted-dark/50"
+        />
+      </div>
 
-        <div>
-          <FormInput
-            name="name"
-            type="text"
-            register={register}
-            disabled={isSubmitting}
-            placeholder={t('auth:name', 'Nombre')}
-            error={errors.name}
-          />
-        </div>
+      <div className="space-y-1">
+        <Label htmlFor="dni" className="text-sm font-medium text-foreground">DNI</Label>
+        <FormInput
+          name="dni"
+          type="text"
+          register={register}
+          disabled={isSubmitting}
+          placeholder="Enter your DNI"
+          error={errors.dni}
+          className="w-full rounded-lg bg-muted/50 dark:bg-muted-dark/50"
+        />
+      </div>
 
-        <div>
-          <FormInput
-            name="last_name"
-            type="text"
-            register={register}
-            disabled={isSubmitting}
-            placeholder={t('auth:last_name', 'Apellido')}
-            error={errors.last_name}
-          />
-        </div>
+      <div className="space-y-1">
+        <Label htmlFor="phone" className="text-sm font-medium text-foreground">Phone</Label>
+        <FormInput
+          name="phone"
+          type="tel"
+          register={register}
+          disabled={isSubmitting}
+          placeholder="Enter your phone number"
+          error={errors.phone}
+          className="w-full rounded-lg bg-muted/50 dark:bg-muted-dark/50"
+        />
+      </div>
 
-        <div>
-          {/* <FormInput
-            name="gender"
-            type="text"
-            register={register}
-            disabled={isSubmitting}
-            placeholder={t('user:gender', 'Género (male, female, unspecified)')}
-            error={errors.gender}
-          /> */}
-
-          <Controller
-            name="gender"
-            control={control}
-            render={({ field }) => (
-              <>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Gender" />
-                  </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="male">Male</SelectItem>
-                  <SelectItem value="female">female</SelectItem>
-                  <SelectItem value="unspecified">unspecified</SelectItem>
-                </SelectContent>
-              </Select>
-              </>
-            )}
-          />
-
-          {errors.gender && (
-            <p className="text-sm text-red-500 mt-1">
-              {errors.gender.message}
-            </p>
+      <div className="space-y-1">
+        <Label htmlFor="date_of_birth" className="text-sm font-medium text-foreground">Date of Birth</Label>
+        <Controller
+          control={control}
+          name="date_of_birth"
+          render={({ field }) => (
+            <DatePickerCustom
+              message="Select your date of birth"
+              selectedDate={field.value}
+              setSelectedDate={field.onChange}
+              className="w-full rounded-lg bg-muted/50 dark:bg-muted-dark/50"
+            />
           )}
-        </div>
+        />
+        {errors.date_of_birth && (
+          <p className="text-sm text-red-500 mt-1">{errors.date_of_birth.message}</p>
+        )}
+      </div>
 
-        <div>
-          <FormInput
-            name="phone"
-            type="text"
-            register={register}
-            disabled={isSubmitting}
-            placeholder={t('auth:phone', 'Teléfono')}
-            error={errors.phone}
-          />
-        </div>
+      <div className="space-y-1">
+        <Label htmlFor="gender" className="text-sm font-medium text-foreground">Gender</Label>
+        <Controller
+          name="gender"
+          control={control}
+          render={({ field }) => (
+            <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <SelectTrigger className="w-full rounded-lg bg-muted/50 dark:bg-muted-dark/50">
+                <SelectValue placeholder="Select gender" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="male">Male</SelectItem>
+                <SelectItem value="female">Female</SelectItem>
+                <SelectItem value="unspecified">Prefer not to say</SelectItem>
+              </SelectContent>
+            </Select>
+          )}
+        />
+        {errors.gender && (
+          <p className="text-sm text-red-500 mt-1">{errors.gender.message}</p>
+        )}
+      </div>
 
-        <div>
-          <FormInput
-            name="address"
-            type="text"
-            register={register}
-            disabled={isSubmitting}
-            placeholder={t('user:address', 'Dirección')}
-            error={errors.address}
-          />
-        </div>
+      <div className="space-y-1">
+        <Label htmlFor="address" className="text-sm font-medium text-foreground">Address</Label>
+        <FormInput
+          name="address"
+          type="text"
+          register={register}
+          disabled={isSubmitting}
+          placeholder="Enter your address"
+          error={errors.address}
+          className="w-full rounded-lg bg-muted/50 dark:bg-muted-dark/50"
+        />
+      </div>
 
-        <div>
-          <FormInput
-            name="occupation"
-            type="text"
-            register={register}
-            disabled={isSubmitting}
-            placeholder={t('user:occupation', 'Ocupación')}
-            error={errors.occupation}
-          />
-        </div>
-
-        <div className="flex justify-end pt-4">
-          <Button
-            disabled={isSubmitting}
-            variant="default"
-            className="px-6"
-          >
-            {isSubmitting ? t('auth:loading') : 'actualizar'}
-          </Button>
-        </div>
-      </form>
+      <div className="space-y-1">
+        <Label htmlFor="occupation" className="text-sm font-medium text-foreground">Occupation</Label>
+        <FormInput
+          name="occupation"
+          type="text"
+          register={register}
+          disabled={isSubmitting}
+          placeholder="Enter your occupation"
+          error={errors.occupation}
+          className="w-full rounded-lg bg-muted/50 dark:bg-muted-dark/50"
+        />
+      </div>
     </div>
+
+    <div className="pt-4">
+      <Button
+        type="submit"
+        disabled={isSubmitting}
+        className="w-full sm:w-auto bg-primary text-primary-foreground hover:bg-primary/90"
+      >
+        {isSubmitting ? 'Saving...' : 'Save Changes'}
+      </Button>
+    </div>
+  </form>
+</div>
+
+
   );
 }
 

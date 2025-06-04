@@ -118,8 +118,9 @@ export const createCustomerService = async (data) => {
         throw error;
     }
 }
+
 export const updateCustomerService = async (data) => {
-    const { email, name, last_name, gender, phone, address, occupation, avatar } = data;
+    const { email, name, last_name, dni, date_of_birth, gender, phone, address, occupation, avatar } = data;
     try {
         const response = await put({
             url: 'customer/update',
@@ -127,6 +128,8 @@ export const updateCustomerService = async (data) => {
                 email,
                 name,
                 last_name,
+                dni, 
+                date_of_birth,
                 gender,
                 phone,
                 address,

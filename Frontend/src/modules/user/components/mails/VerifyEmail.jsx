@@ -9,10 +9,10 @@ const VerifyEmail = () => {
   const location = useLocation();
 
   useEffect(() => {
+
     const verify = async () => {
       const url = `verify-email${location.search}`;
       const response = await verifyEmail(url);
-      console.log("verfiy reponse", response);
       if(response) navigate('/user');
     }
 

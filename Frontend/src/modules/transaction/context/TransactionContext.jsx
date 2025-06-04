@@ -30,7 +30,6 @@ export const TransactionProvider = ({ children }) => {
     }
 
     const external =async (data) => {
-        console.log("datacontext", data)
         try {
             const response = await externalTransferService(data);
         } catch (error) {

@@ -1,25 +1,25 @@
 import { Button } from '@/components/ui/button'
 import useModal from '@/hooks/useModal'
-import { Plus, Sparkles } from 'lucide-react'
+import { CreditCardIcon, CreditCard } from 'lucide-react'
 import React from 'react'
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import FormInput from '@/components/FormInput'
-import { useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useCard } from '../context/CardContext'
 import { useAccount } from '@/modules/account/context/AccountContext'
-
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 const NewCard = () => {
 
   const newCardSchema = z.object({
       iban: z.string().length(24),
-      type: z.string().nonempty(),
-      alias: z.string().nullable(),
+      type: z.enum(['credit', 'debit']),
+      alias: z.string().min(3),
   });
 
-  const { handleSubmit, register, reset, setError, control,  formState: { errors, isSubmitting } } = useForm({
+  const { handleSubmit, register, reset, setError, control, formState: { errors, isSubmitting } } = useForm({
       resolver: zodResolver(newCardSchema),
   });
 
@@ -28,129 +28,161 @@ const NewCard = () => {
   const { createCard, types, getAllCards } = useCard();
 
   const onSubmit = async (data) => {
-
     try {
-      const response  = await createCard(data);
-      const updates = await getAllCards();
+      await createCard(data);
+      await getAllCards();
       close();
-    } catch (error) {
-      console.log("Erropr", error);
-    }finally{
       reset();
+    } catch (error) {
+      const { errors: responseErrors, message: generalMessage } = error.response?.data || {};
+
+      if (responseErrors) {
+        Object.keys(responseErrors).forEach((key) => {
+          setError(key, { type: 'manual', message: responseErrors[key] });
+        });
+      }
+
+      if (generalMessage) {
+        setError('root', {
+          type: 'manual',
+          message: generalMessage,
+        });
+      }
     }
   }
 
-
-  return (
-    <>
+return (
+  <>
     <div
-      className=" cursor-pointer transform transition-all duration-500 hover:scale-105 hover:-translate-y-2"
       onClick={open}
-    >
-      <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-r from-cyan-400 via-purple-500 to-cyan-400 opacity-30 blur-sm group-hover:opacity-100 group-hover:blur transition duration-1000 animate-gradient-x"></div>
-
-      <div className="relative h-full flex flex-col items-center justify-center p-6 bg-black/20 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden min-h-[280px]">
-        <div className="absolute inset-0 opacity-5">
-          <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.1)_1px,transparent_1px)] bg-[length:20px_20px]"></div>
+        className="w-80 h-48 rounded-xl p-6 flex flex-col justify-between transition-all duration-300 shadow-md border border-border bg-white dark:bg-muted cursor-pointer hover:shadow-lg"    >
+      <div className="flex items-center gap-4">
+        <div className="flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 text-primary dark:bg-primary/20">
+          <CreditCardIcon className="w-6 h-6" />
         </div>
 
-        <div className="absolute inset-2 border-2 border-dashed border-white/20 rounded-xl"></div>
-
-        <div className="relative z-10 flex flex-col items-center text-center space-y-4">
-          <div className="w-16 h-16 rounded-full bg-gradient-to-r from-cyan-500/20 to-purple-500/20 flex items-center justify-center group-hover:from-cyan-500/30 group-hover:to-purple-500/30 transition-all duration-500">
-            <Plus className="h-8 w-8 text-white/70 group-hover:text-white group-hover:scale-110 transition-all duration-300" />
-          </div>
-
-          <div className="space-y-2">
-            <h3 className="text-xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
-              Nueva Tarjeta
-            </h3>
-            <p className="text-white/60 text-sm max-w-[200px]">Solicita una nueva tarjeta quantum para tu cuenta</p>
-          </div>
-
-          <Button className="mt-4 bg-gradient-to-r from-cyan-500/50 to-purple-500/50 hover:from-cyan-500/70 hover:to-purple-500/70 border-0 text-white backdrop-blur-sm">
-            <Sparkles className="h-4 w-4 mr-2" />
-            Solicitar
-          </Button>
+        <div className=' '>
+          <h3 className="text-lg font-semibold text-foreground leading-tight">
+            Order Your New Card
+          </h3>
+          <p className="text-sm text-muted-foreground max-w-xs">
+            Fast, secure, and accepted worldwide. 
+          </p>
         </div>
-
-        <div className="absolute top-3 left-3 w-3 h-3 border-t-2 border-l-2 border-cyan-400/50 rounded-tl-lg"></div>
-        <div className="absolute top-3 right-3 w-3 h-3 border-t-2 border-r-2 border-purple-400/50 rounded-tr-lg"></div>
-        <div className="absolute bottom-3 left-3 w-3 h-3 border-b-2 border-l-2 border-purple-400/50 rounded-bl-lg"></div>
-        <div className="absolute bottom-3 right-3 w-3 h-3 border-b-2 border-r-2 border-cyan-400/50 rounded-br-lg"></div>
       </div>
+
+      <Button
+        onClick={(e) => {
+          e.stopPropagation()
+          open()
+        }}
+        className="w-full mt-4 bg-primary text-white text-sm font-medium py-2.5 rounded-md hover:bg-primary/90 transition-colors
+          dark:bg-white dark:text-black dark:border dark:border-black"
+      >
+        Request Now
+      </Button>
     </div>
 
-    <Dialog open={isOpen} onOpenChange={close}>
-      <DialogContent className="sm:max-w-[425px]">
-        <div className="absolute inset-0 bg-gradient-to-b from-blue-500/20 to-blue-500/5 opacity-10 rounded-lg -z-10" />
-
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            Nueva Tarjeta
+    <Dialog open={isOpen} onOpenChange={close} className="relative z-50">
+      <DialogContent className="sm:max-w-lg w-full rounded-2xl p-8 bg-card/95 backdrop-blur-lg border border-primary/20 shadow-lg dark:border-primary/40 dark:bg-muted-dark/80">
+        <DialogHeader className="mb-6 flex items-center justify-between">
+          <DialogTitle className="flex items-center gap-2 text-xl font-semibold text-primary">
+            <CreditCard className="w-6 h-6" />
+            Request a New Card
           </DialogTitle>
-          <DialogDescription>Solicita una nueva tarjeta</DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mt-4">
+        <DialogDescription className="text-sm text-muted-foreground mb-6">
+          Request your new card to access secure and payments worldwide.
+        </DialogDescription>
 
-      <select {...register("iban")} defaultValue="">
-        <option value="" disabled>
-          Select an account
-        </option>
-        {accounts.map(account => (
-          <option key={account.iban} value={account.iban}>
-            {account.alias}*{account.iban}
-          </option>
-        ))}
-      </select>
-                {errors.iban && (
-                    <p className="text-red-500 text-xs mt-1">{errors.iban.message}</p>
-                )}
-      <select {...register("type")} defaultValue="">
-        <option value="" disabled>
-          Select card type
-        </option>
-        {types.map((type) => (
-          <option key={type} value={type}>
-            {type}
-          </option>
-        ))}
-      </select>
-                {errors.type && (
-                    <p className="text-red-500 text-xs mt-1">{errors.type.message}</p>
-                )}
-            <FormInput
-                name="alias"
-                type="text"
-                register={register}
-                disabled={isSubmitting}
-                placeholder="alias"
-                error={errors.alias}
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          <div>
+            <label className="block mb-2 text-sm font-medium text-muted-foreground">
+              Select Account
+            </label>
+            <Controller
+              name="iban"
+              control={control}
+              render={({ field }) => (
+                <Select onValueChange={field.onChange} value={field.value || ''}>
+                  <SelectTrigger className="w-full rounded-lg bg-muted/50 dark:bg-muted-dark/50 focus:ring-2 focus:ring-primary focus:ring-offset-0">
+                    <SelectValue placeholder="Choose an account" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {accounts.map(account => (
+                      <SelectItem key={account.iban} value={account.iban}>
+                        {account.alias}* {account.iban}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
             />
+            {errors.iban && <p className="mt-1 text-sm text-red-500">{errors.iban.message}</p>}
+          </div>
 
-            <DialogFooter className="gap-2 sm:gap-0">
-                <Button
-                    variant="outline"
-                    onClick={close}
-                    disabled={isSubmitting}
-                >
-                    Cancelar
-                </Button>
-                <Button
-                    disabled={isSubmitting}
-                    variant="outline"
-                    className=" p-3 bg-primary text-white rounded-lg focus:outline-none"
-                >
-                    {isSubmitting ? "Procesando..." : "Socicitar tarjeta"}
-                </Button>
-                    </DialogFooter>
+          <div>
+            <label className="block mb-2 text-sm font-medium text-muted-foreground">
+              Card Type
+            </label>
+            <Controller
+              name="type"
+              control={control}
+              render={({ field }) => (
+                <Select onValueChange={field.onChange} value={field.value || ''}>
+                  <SelectTrigger className="w-full rounded-lg bg-muted/50 dark:bg-muted-dark/50 focus:ring-2 focus:ring-primary focus:ring-offset-0">
+                    <SelectValue placeholder="Choose card type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {types.map(type => (
+                      <SelectItem key={type} value={type}>
+                        {type}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
+            {errors.type && <p className="mt-1 text-sm text-red-500">{errors.type.message}</p>}
+          </div>
+
+          <FormInput
+            name="alias"
+            type="text"
+            register={register}
+            disabled={isSubmitting}
+            placeholder="Card Alias"
+            error={errors.alias}
+            className="w-full rounded-lg bg-muted/50 dark:bg-muted-dark/50 px-4 py-3 focus:ring-2 focus:ring-primary focus:ring-offset-0"
+          />
+
+          {errors.root && <p className="mt-1 text-sm text-red-500">{errors.root.message}</p>}
+
+          <DialogFooter className="flex flex-col sm:flex-row justify-end gap-4">
+            <Button
+              variant="outline"
+              onClick={close}
+              disabled={isSubmitting}
+              className="px-6 py-3 rounded-lg w-full sm:w-auto"
+            >
+              Cancel
+            </Button>
+            <Button
+              disabled={isSubmitting}
+              variant="default"
+              className="px-6 py-3 rounded-lg bg-primary text-white hover:bg-primary/90 w-full sm:w-auto dark:text-black"
+              type="submit"
+            >
+              {isSubmitting ? "Processing..." : "Request Card"}
+            </Button>
+          </DialogFooter>
         </form>
       </DialogContent>
     </Dialog>
-  
-</>
+  </>
 )
+
 }
 
 export default NewCard

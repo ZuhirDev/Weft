@@ -63,3 +63,19 @@ export const updateAccountService = async (data) => {
         throw error;
     }
 }
+
+export const accountChartService = async (data) => {
+    const { account_id } = data;
+    try {
+        const response = await post({ 
+            url: 'transactions/history',
+            data: {
+                account_id
+            }
+        });
+
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}

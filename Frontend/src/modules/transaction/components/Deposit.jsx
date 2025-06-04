@@ -10,7 +10,6 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTransaction } from '../context/TransactionContext';
 import { useAccount } from '@/modules/account/context/AccountContext';
-import { Input } from '@/components/ui/input';
 
 const Deposit = () => {
 
@@ -25,9 +24,6 @@ const Deposit = () => {
     const { isOpen, open, close } = useModal();
     const { deposit } = useTransaction();
     const { selectedAccount } = useAccount();
-
-    if(!selectedAccount) return <div>cargando...</div>;
-
 
     const onSubmit = async (data) => {
         
@@ -49,69 +45,84 @@ const Deposit = () => {
 
 
     return (
-    <>
-        <Button
+        <>
+            <Button
             onClick={open}
             variant="outline"
-            className="w-full h-20 flex flex-col items-center justify-center gap-1"
-        >
-        <Download className="h-5 w-5 text-green-500" />
-            <span>Deposito</span>
-        </Button>
+            className="h-20 w-full flex flex-col items-center justify-center gap-1 rounded-xl border border-green-500 text-green-600 hover:bg-green-50 transition"
+            >
+            <Download className="h-5 w-5 text-green-500" />
+            <span>Deposit</span>
+            </Button>
 
-        <Dialog open={isOpen} onOpenChange={close}>
-            <DialogContent className="fixed z-50 sm:max-w-[425px] w-full bg-white shadow-lg rounded-md">
-                <div className="absolute inset-0 bg-gradient-to-b from-green-500/20 to-green-500/5 opacity-10 rounded-lg -z-10" />
+            <Dialog open={isOpen} onOpenChange={close}>
+            <DialogContent className="sm:max-w-xl max-w-full bg-white dark:bg-zinc-900 border border-muted dark:border-zinc-700 rounded-lg shadow-sm">
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent to-muted/10 dark:to-muted/20 opacity-10 rounded-lg -z-10" />
 
                 <DialogHeader>
-                    <DialogTitle className="flex items-center gap-2">
-                        <Download className="h-5 w-5 text-green-500" />
-                        Realizar Depósito
-                    </DialogTitle>
-                    <DialogDescription>
-                        Ingresa fondos a tu cuenta
-                    </DialogDescription>
+                <DialogTitle className="flex items-center gap-2 text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+                    <Download className="h-5 w-5 text-green-500" />
+                    Make a Deposit
+                </DialogTitle>
+                <DialogDescription className="text-sm text-muted-foreground">
+                    Add funds to your account.
+                </DialogDescription>
                 </DialogHeader>
 
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mt-4">
-
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 py-4">
+                <div className="flex flex-col space-y-1.5">
+                    <Label htmlFor="amount" className="text-zinc-900 dark:text-zinc-100">
+                    Amount
+                    </Label>
                     <FormInput
-                        name="amount"
-                        type="number"
-                        register={register}
-                        disabled={isSubmitting}
-                        placeholder="Cantidad"
-                        error={errors.amount}
+                    id="amount"
+                    name="amount"
+                    type="number"
+                    register={register}
+                    disabled={isSubmitting}
+                    placeholder="Enter amount"
+                    error={errors.amount}
                     />
+                </div>
 
-                        <Textarea
-                            name="concept"
-                            rows={3}
-                            placeholder="Añade una concept"
-                            {...register("concept")}
-                        />
-                    <DialogFooter className="gap-2 sm:gap-0">
-                        <Button
-                            type="button"
-                            variant="outline"
-                            onClick={close}
-                            disabled={isSubmitting}
-                        >
-                            Cancelar
-                        </Button>
-                        <Button
-                            disabled={isSubmitting}
-                            variant="outline"
-                            className=" p-3 bg-primary text-white rounded-lg focus:outline-none"
-                        >
-                            {isSubmitting ? "Procesando..." : "Confirmar Depósito"}
-                        </Button>
-                    </DialogFooter>
+                <div className="flex flex-col space-y-1.5">
+                    <Label htmlFor="concept" className="text-zinc-900 dark:text-zinc-100">
+                    Concept
+                    </Label>
+                    <Textarea
+                    id="concept"
+                    name="concept"
+                    rows={3}
+                    placeholder="Add a concept or note"
+                    {...register("concept")}
+                    className="w-full border rounded px-3 py-2 text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-900 border-zinc-300 dark:border-zinc-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+                    />
+                </div>
+
+                <DialogFooter className="flex justify-end gap-2">
+                    <Button
+                    type="button"
+                    variant="outline"
+                    onClick={close}
+                    disabled={isSubmitting}
+                    >
+                    Cancel
+                    </Button>
+                    <Button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="bg-green-500 hover:bg-green-600 text-white"
+                    >
+                    {isSubmitting ? "Processing..." : "Confirm Deposit"}
+                    </Button>
+                </DialogFooter>
                 </form>
             </DialogContent>
-        </Dialog>
-    </>
-  )
+            </Dialog>
+        </>
+    )
+
+    
 }
 
 export default Deposit

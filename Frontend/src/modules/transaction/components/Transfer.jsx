@@ -1,8 +1,8 @@
 import useModal from '@/hooks/useModal'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
 import { Button } from '@/components/ui/button';
-import { Download, Send } from 'lucide-react';
-import { Controller, useForm } from 'react-hook-form';
+import { Send } from 'lucide-react';
+import { useForm } from 'react-hook-form';
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import FormInput from '@/components/FormInput';
@@ -10,14 +10,6 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTransaction } from '../context/TransactionContext';
 import { useAccount } from '@/modules/account/context/AccountContext';
-import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 
 const Transfer = () => {
 
@@ -45,8 +37,7 @@ const Transfer = () => {
             type: 'transfer',
             ...data,
         }
-        console.log(info)
-        console.log(info.transferType)
+
         try {
             if(info.transferType === 'internal') {
                 const response = await transfer(info)
@@ -64,95 +55,97 @@ const Transfer = () => {
     
     
     return (
-    <>
-        <Button
-            onClick={open}
-            variant="outline"
-            className="w-full h-20 flex flex-col items-center justify-center gap-1"
-        >
-        <Send className="h-5 w-5 text-blue-500" />
-            <span>Transferencia</span>
-        </Button>
-        
-         <Dialog open={isOpen} onOpenChange={close}>
-      <DialogContent className="sm:max-w-[425px]">
-        <div className="absolute inset-0 bg-gradient-to-b from-blue-500/20 to-blue-500/5 opacity-10 rounded-lg -z-10" />
+        <>
+            <Button
+                onClick={open}
+                variant="outline"
+                className="h-20 w-full flex flex-col items-center justify-center gap-1 rounded-xl border border-blue-500 text-blue-600 hover:bg-blue-50 transition"
+            >
+                <Send className="h-5 w-5 text-blue-500" />
+                <span>Transfer</span>
+            </Button>
 
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Send className="h-5 w-5 text-blue-500" />
-            Realizar Transferencia
-          </DialogTitle>
-          <DialogDescription>Transfiere fondos a otra cuenta</DialogDescription>
-        </DialogHeader>
+            <Dialog open={isOpen} onOpenChange={close}>
+                <DialogContent className="sm:max-w-xl max-w-full bg-white dark:bg-zinc-900 border border-muted dark:border-zinc-700 rounded-lg shadow-sm">
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent to-muted/10 dark:to-muted/20 opacity-10 rounded-lg -z-10" />
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mt-4">
+                <DialogHeader>
+                    <DialogTitle className="flex items-center gap-2 text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+                    <Send className="h-5 w-5 text-blue-500" />
+                    Make a Transfer
+                    </DialogTitle>
+                    <DialogDescription className="text-sm text-muted-foreground">
+                    Transfer funds to another account.
+                    </DialogDescription>
+                </DialogHeader>
 
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 py-4">
+                    <div className="flex flex-col space-y-1.5">
+                        <Label htmlFor="transferType" className="text-zinc-900 dark:text-zinc-100">
+                            Transfer Type
+                        </Label>
+                        <select
+                            id="transferType"
+                            {...register("transferType")}
+                            className="bg-white text-black dark:bg-zinc-900 dark:text-white border border-muted rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        >
+                            <option value="">Select an option</option>
+                            <option value="internal">Same Bank Account</option>
+                            <option value="external">External Bank Account</option>
+                        </select>
 
-            <div className="flex flex-col">
+                    {errors.transferType && (
+                        <p className="text-sm text-red-500">{errors.transferType.message}</p>
+                    )}
+                    </div>
 
-                <select
-                    id="transferType"
-                    {...register("transferType", { required: "Este campo es obligatorio" })}
-                    className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                    <option value="">Seleccione una opción</option>
-                    <option value="internal">Cuenta del mismo banco</option>
-                    <option value="external">Cuenta externa (otro banco)</option>
-                </select>
-                {errors.transferType && (
-                    <p className="text-red-500 text-xs mt-1">{errors.transferType.message}</p>
-                )}
-            </div>
-
-
-            <FormInput
-                name="destination_iban"
-                type="text"
-                register={register}
-                disabled={isSubmitting}
-                placeholder="iban destino"
-                error={errors.destination_iban}
-            />
-  
-            <FormInput
-                name="amount"
-                type="number"
-                register={register}
-                disabled={isSubmitting}
-                placeholder="Cantidad"
-                error={errors.amount}
-            />
-
-            <Textarea
-                name="concept"
-                rows={3}
-                placeholder="Añade una concept"
-                {...register("concept")}
-            />
-
-            <DialogFooter className="gap-2 sm:gap-0">
-                <Button
-                    type="button"
-                    variant="outline"
-                    onClick={close}
+                    <FormInput
+                    name="destination_iban"
+                    type="text"
+                    register={register}
                     disabled={isSubmitting}
-                >
-                    Cancelar
-                </Button>
-                <Button
+                    placeholder="Destination IBAN"
+                    error={errors.destination_iban}
+                    />
+
+                    <FormInput
+                    name="amount"
+                    type="number"
+                    register={register}
                     disabled={isSubmitting}
-                    variant="outline"
-                    className=" p-3 bg-primary text-white rounded-lg focus:outline-none"
-                >
-                    {isSubmitting ? "Procesando..." : "Confirmar Depósito"}
-                </Button>
+                    placeholder="Amount"
+                    error={errors.amount}
+                    />
+
+                    <Textarea
+                    name="concept"
+                    rows={3}
+                    placeholder="Add a concept"
+                    {...register("concept")}
+                    />
+
+                    <DialogFooter className="flex justify-end gap-2">
+                    <Button
+                        type="button"
+                        variant="outline"
+                        onClick={close}
+                        disabled={isSubmitting}
+                    >
+                        Cancel
+                    </Button>
+                    <Button
+                        type="submit"
+                        disabled={isSubmitting}
+                        className="bg-blue-500 hover:bg-blue-600 text-white"
+                    >
+                        {isSubmitting ? "Processing..." : "Confirm Transfer"}
+                    </Button>
                     </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
-    </>
-  )
+                </form>
+                </DialogContent>
+            </Dialog>
+        </>
+    )
 }
 
 export default Transfer

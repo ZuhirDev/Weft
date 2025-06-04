@@ -16,7 +16,7 @@ createRoot(document.getElementById('root')).render(
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme" >
         <LanguageProvider>
           <AuthProvider>
-            {/* <UserProvider >
+            <UserProvider >
               <VisibilityProvider >
                 <TransactionProvider>
                   <CardProvider>
@@ -26,8 +26,7 @@ createRoot(document.getElementById('root')).render(
                   </CardProvider>
                 </TransactionProvider>
               </VisibilityProvider>
-            </UserProvider> */}
-            <App />
+            </UserProvider>
           </AuthProvider>
         </LanguageProvider>
     </ThemeProvider>

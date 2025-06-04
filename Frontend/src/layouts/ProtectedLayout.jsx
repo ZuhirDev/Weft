@@ -1,46 +1,20 @@
 import React from 'react'
 import { Outlet } from 'react-router-dom'
-import Navbar from './Navbar'
 import Footer from '@/components/Footer'
-import { useAuth } from '@/modules/auth/context/AuthContext'
-import { UserProvider } from '@/modules/user/context/UserContext'
-import { VisibilityProvider } from '@/context/VisibilityContext'
-import { TransactionProvider } from '@/modules/transaction/context/TransactionContext'
-import { CardProvider } from '@/modules/card/context/CardContext'
-import { AccountProvider } from '@/modules/account/context/AccountContext'
+import Navbar from '@/components/navbar/Navbar'
 
-const ProtectedLayout = () => { 
-
-  const { isAuthenticated } = useAuth();
+const ProtectedLayout = () => {
 
   return (
+    <div className="min-h-screen flex flex-col bg-background text-foreground">
 
-                <UserProvider >
-              <VisibilityProvider >
-                <TransactionProvider>
-                  <CardProvider>
-                    <AccountProvider >
-                     
-
-    <div className="min-h-screen flex flex-col">
       <Navbar />
-      
-      <main className="flex-1">
+      <main className="flex-1 w-[90vw] mx-auto py-8">
         <Outlet />
       </main>
 
       <Footer />
     </div>
-
-
-                    </AccountProvider>
-                  </CardProvider>
-                </TransactionProvider>
-              </VisibilityProvider>
-            </UserProvider>
-
-    
-
   )
 }
 

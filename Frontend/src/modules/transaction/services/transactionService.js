@@ -1,6 +1,4 @@
 import { get, post } from "@/utils/xhr";
-import { data } from "react-router-dom";
-
 
 export const cardPaymentService = async (data) => {
     const { card_number, amount, concept } = data;

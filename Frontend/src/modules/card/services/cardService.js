@@ -14,7 +14,7 @@ export const getAllCardsService = async () => {
 }
 
 export const createCardService = async (data) => {
-    const { iban, alias, type } = data; console.log("alias", alias)
+    const { iban, alias, type } = data;
     try {
         const response = await post({
             url: 'card/store',

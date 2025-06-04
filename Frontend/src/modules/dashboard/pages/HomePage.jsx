@@ -1,80 +1,29 @@
-import { Button } from '@/components/ui/button';
-import socketService from '@/lib/socketService';
-import { get } from '@/utils/xhr';
-import Echo from 'laravel-echo';
-import Pusher from 'pusher-js';
-import React, { useEffect, useState } from 'react'
+import AccountRecentTrans from '@/modules/account/components/AccountRecentTrans';
+import { AccountChart } from '../components/AccountChart';
+import FinancialTips from '../components/FinancialTips';
+import AccountOverview from '../components/AccountOverview';
+import { useAuth } from '@/modules/auth/context/AuthContext';
 
 const HomePage = () => {
-const [notification, setNotification] = useState(null);
+  const { user } = useAuth();
 
+  return (
+    <div className="w-[70%] mx-auto p-6 space-y-10">
+        <h1 className="text-3xl font-extrabold text-zinc-900 dark:text-zinc-200 mb-4">
+            Welcome back, {user.name}
+        </h1>
 
-    // useEffect(() => {
-    //     const pusher = new Pusher('s8uws0nw7wzpjtxbhfx9', {
-    //         cluster: '',
-    //         wsHost: 'localhost',
-    //         wsPort: 85,
-    //         wssPort: 85,
-    //         forceTLS: false,
-    //         disableStats: true,
-    //         enabledTransports: ['ws'],
-    //     });
+        <section className="space-y-6">
+            <AccountOverview />
+            <AccountChart />
+        </section>
 
-    //     const channel = pusher.subscribe('public-channel');
+        <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <FinancialTips />
+            <AccountRecentTrans />
+        </section>
+    </div>
+  );
+};
 
-    //     channel.bind('user-notified', (data) => {
-    //         console.log('Mensaje recibido:', data.message);
-    //         setNotification(data.message);
-    //     });
-
-    //     return () => {
-    //         channel.unbind_all();
-    //         channel.unsubscribe();
-    //     };
-    // }, []);
-
-
-    useEffect(() => {
-      const channel = socketService.subscribe('public-channel');
-
-      channel.listen('.user-notified', (e) => {
-        console.log('Evento recibido mamañema:', e.message);
-        setNotification(e.message);
-      });
-
-      return () => {
-        socketService.unsubscribe('public-channel');
-      };
-    }, []);
-
-
-    useEffect(() => {
-        if (notification) {
-            const timer = setTimeout(() => {
-                setNotification(null);
-            }, 5000);
-
-            return () => clearTimeout(timer);
-        }
-    }, [notification]);
-
-
-    const notifyUsers = async () => {
-      try {
-        await get({url: '/notify'});
-
-      } catch (error) {
-        console.log("Error", error)
-      }
-    }
-
-    return (
-        <div>
-            <Button onClick={notifyUsers}>Notificar a todos los usuarios</Button>
-
-            {notification && <div>{notification}</div>}
-        </div>
-    );
-}
-
-export default HomePage
+export default HomePage;

@@ -6,7 +6,7 @@ import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger } from "@/components/ui/select"
 
-export function DatePickerCustom({ selectedDate, setSelectedDate, message }) {
+export function DatePickerCustom({ selectedDate, setSelectedDate, message, className }) {
   const [currentMonth, setCurrentMonth] = useState(() => {
     const now = new Date()
     return new Date(now.getFullYear(), now.getMonth(), 1)
@@ -35,7 +35,7 @@ export function DatePickerCustom({ selectedDate, setSelectedDate, message }) {
       <PopoverTrigger asChild>
         <Button
           variant="outline"
-          className="w-[280px] justify-start text-left font-normal"
+          className={`w-[260px] justify-start text-left font-normal ${className}`}
         >
           <CalendarIcon className="mr-2 h-4 w-4" />
           {selectedDate ? (

@@ -1,36 +1,37 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useAuth } from '@auth/context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import PasswordVerification from '../PasswordVerification';
 import useModal from '@/hooks/useModal';
+import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 
-/** AÑDIR UN SKELETON O LOADING MIENTRAS SE VERIFICA  y mostrar mensajes de error*/
 const Disable2FA = () => {
 
   const { t } = useTranslation();
   const { disable2FA } = useAuth();
   const { isOpen, open, close } = useModal();
-
+  
   const handleDisable2FA = async () => {
 
     close();
     try {
       const response = await disable2FA();
+      toast.success(response?.message);
 
     } catch (error) {
       console.log(error.response.data.message)
     }
-
-    
   }
+
   return (
     <>
-       <button
+      <Button
         onClick={open} 
-        className="bg-red-500 text-white ml-8 px-4 py-2 rounded hover:bg-red-600 transition duration-300"
+        className="destructive"
       >
-        {t('auth:disable_2fa')}
-      </button>
+        Disable 2FA
+      </Button>
 
       <PasswordVerification 
         isOpen={isOpen}

@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { createCustomerService, forgotPasswordService, getCustomerService, meService, passwordResetService, sendVerifyEmailService, updateCustomerService, updatePasswordService, verifyEmailService } from "@user/service/userService";
 import useModal from "@/hooks/useModal";
 import Loading from "@/components/Loading";
+import useAuthEffect from "@/hooks/useAuthEffect";
 import { useAuth } from "@/modules/auth/context/AuthContext";
 
 
@@ -9,33 +10,15 @@ const userContext = createContext();
 
 export const UserProvider = ({ children }) => {
 
-    const [user, setUser] = useState(null);
-    const { isAuthenticated } = useAuth();
     const { isOpen, open, close } = useModal();
 
-    useEffect(() => {
+    const { setUser } = useAuth();
 
-        if(isAuthenticated){
-
-            
-            open();
-    
-            const customer = async () => {
-                const response = await getCustomer();
-                setUser(response.customer);
-            }
-    
-    
-    
-            customer();
-    
-            close();
-        }
-    }, [isAuthenticated]);
-    
-    
     const me = async () => { 
-        return  await meService();
+        const response =  await meService();
+
+
+        return response;
     }
 
     const createCustomer = async (data) => {
@@ -51,6 +34,9 @@ export const UserProvider = ({ children }) => {
     const updateCustomer = async (data) => {
         try {
             const response = await updateCustomerService(data);
+
+            setUser(response.user);
+            sessionStorage.setItem(JSON.stringify(response?.user))
 
             return response;
         } catch (error) {
@@ -70,6 +56,7 @@ export const UserProvider = ({ children }) => {
 
     const updatePassword = async (passwords) => {
         const response  = await updatePasswordService(passwords);
+
         return response;
     }
 
@@ -81,7 +68,6 @@ export const UserProvider = ({ children }) => {
 
     const passwordReset = async (data) => {
         const response = await passwordResetService(data);
-        console.log("response contex", response)
 
         return response;
     }
@@ -97,8 +83,6 @@ export const UserProvider = ({ children }) => {
         return response;
     }
 
-    if(isOpen) return <Loading />;
-
     const value = {
         me,
         updatePassword,
@@ -108,7 +92,6 @@ export const UserProvider = ({ children }) => {
         verifyEmail,
         updateCustomer,
         getCustomer,
-        user,
         createCustomer
     }
 

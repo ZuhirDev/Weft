@@ -9,7 +9,6 @@ import { Lock } from "lucide-react"
 import FormInput from '@/components/FormInput';
 import { useAuth } from '@auth/context/AuthContext';
 
-
 const PasswordVerification = ({ isOpen, onClose, onVerify }) => {
     
     const { t } = useTranslation();
@@ -51,51 +50,45 @@ const PasswordVerification = ({ isOpen, onClose, onVerify }) => {
     }
 
     return(
-        <>
+        <Dialog open={isOpen} onOpenChange={handleClose}>
+            <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                    <DialogTitle className="flex items-center gap-2">
+                        <Lock className="h-5 w-5" />
+                        Security Verification
+                    </DialogTitle>
+                </DialogHeader>
 
-            <Dialog open={isOpen} onOpenChange={handleClose}>
-                <DialogContent className="sm:max-w-md">
-                    <DialogHeader>
-                        <DialogTitle className="flex items-center gap-2">
-                            <Lock className="h-5 w-5" />
-                            Verificación de Seguridad
-                        </DialogTitle>
-                    </DialogHeader>
-            
-                    <DialogDescription>
-                        Por favor, introduce tu contraseña para acceder a la información confidencial.
-                    </DialogDescription>
+                <DialogDescription>
+                    Please enter your password to access confidential information.
+                </DialogDescription>
 
+                <form onSubmit={handleSubmit(onSubmit)} className='py-2' >
+                    <FormInput
+                        name="password"
+                        type="password"
+                        register={register}
+                        disabled={isSubmitting}
+                        placeholder="Password"
+                        error={errors.password}
+                    />
 
-                    <form onSubmit={handleSubmit(onSubmit)} className='py-2' >
-                        <FormInput
-                            name="password"
-                            type="password"
-                            register={register}
+                    {errors.root && (
+                        <p className="text-sm text-red-500 m-2">{errors.root.message}</p>
+                    )}
+
+                    <div className="flex justify-center pt-4">
+                        <Button
                             disabled={isSubmitting}
-                            placeholder={t('auth:password')}
-                            error={errors.password}
-                        />
-
-                        {errors.root && (
-                            <p className="text-sm text-red-500 m-2">{errors.root.message}</p>
-                        )}
-
-                        <div className="flex justify-center pt-4">
-                            <Button
-                                disabled={isSubmitting}
-                                variant="outline"
-                                className="w-full p-3 bg-primary text-white rounded-lg focus:outline-none"
-                            >
-                                {isSubmitting ? t('auth:loading') : 'Verificar' }
-                            </Button>
-                        </div>
-                    </form>
-                            
-                </DialogContent>
-            </Dialog>
-
-        </>
+                            variant="outline"
+                            className="w-full p-3 bg-primary text-white rounded-lg focus:outline-none"
+                        >
+                            {isSubmitting ? 'Loading...' : 'Verify'}
+                        </Button>
+                    </div>
+                </form>
+            </DialogContent>
+        </Dialog>
     );
 }
 

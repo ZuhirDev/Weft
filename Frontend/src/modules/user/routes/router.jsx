@@ -4,7 +4,6 @@ import ForgotPassword from '@user/components/passwords/ForgotPassword';
 import PasswordReset from '@user/components/passwords/PasswordReset';
 import SendVerifyEmail from '@user/components/mails/SendVerifyEmail';
 import VerifyEmail from '@user/components/mails/VerifyEmail';
-import MePage from "@user/pages/MePage";
 import ProtectedRoutes from "@/routes/ProtectedRoutes";
 import UserPage from "../pages/UserPage";
 
@@ -16,10 +15,6 @@ export const protectedUserRoutes  = [
             {
                 path: USER_ROUTES.USER,
                 element: <UserPage />,
-            },
-            {
-                path: USER_ROUTES.ME,
-                element: <MePage />,
             },
         
             {

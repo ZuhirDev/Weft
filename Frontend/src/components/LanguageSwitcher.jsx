@@ -1,13 +1,5 @@
 import React, { useState } from "react";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useLanguage } from "@/context/LanguageContext";
 import { languageConfig } from "@/utils/i18n/languageConfig";
 

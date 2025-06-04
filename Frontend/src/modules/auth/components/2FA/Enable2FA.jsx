@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Copy } from "lucide-react";
+import { Check, Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -21,21 +21,16 @@ const Enable2FA = () => {
     const [copied, setCopied] = useState(false);
     const [isEnabled, setIsEnabled] = useState(false);
 
-    const handleCopy = async () => {
-        try {
-            await navigator.clipboard.writeText(secret);
-            setCopied(true);
-            setTimeout(() => setCopied(false), 2000);
-        } catch (err) {
-            console.error("Error al copiar el enlace:", err);
-        }
+    const copyToClipboard = async (secret) => {
+        await navigator.clipboard.writeText(secret);
+        setCopied(true);
+        setTimeout(() => setCopied(null), 2000);
     };
 
     const handleEnable2FA = async () => {
         try {
             close();
             const response = await enable2FA();
-            console.log("response en enablepage", response);
             
             setQrCodeURL(response.qr_url);
             setSecret(response.secret);
@@ -47,8 +42,7 @@ const Enable2FA = () => {
 
     const handleClose = () => {
         setNeeds2FA(true);
-        sessionStorage.setItem('2fa_enabled', true);
-        sessionStorage.setItem('2fa_verified', true);
+        sessionStorage.setItem('needs_2fa', 'true');
         setIsEnabled(false); 
     };
 
@@ -56,8 +50,9 @@ const Enable2FA = () => {
         <>
 
             <Button onClick={open} variant="outline">
-                        {t('auth:enable_2fa')}                    
-                    </Button>
+                Enable 2FA                    
+            </Button>
+
             <Dialog open={isEnabled}>
 
                 <DialogContent className="sm:max-w-md">
@@ -86,20 +81,20 @@ const Enable2FA = () => {
                                             readOnly
                                         />
                                     </div>
-                                    <Button type="button" onClick={handleCopy} size="sm" className="px-3">
-                                        <span className="sr-only">Copy</span>
-                                        <Copy />
 
-                                        {/* {copiedField === "iban" ? (  IMPLEMENTAR Y QUITA COPIED
-                                            <CheckCircle2 className="h-4 w-4 text-green-500" />
-                                            ) : (
-                                            <Copy className="h-4 w-4" />
-                                        )} */}
-                                    </Button>
-                                </div>
-                                <div className='mt-4'> 
-
-                                {copied && <span className="text-sm text-black-900 ">¡Copiado!</span>}
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        onClick={() => copyToClipboard(secret, 'secret')}
+                                        className="rounded hover:bg-muted"
+                                    >
+                                        {copied ? (
+                                        <Check className="" size={18} />
+                                        ) : (
+                                        <Copy className="text-muted-foreground hover:text-foreground" size={18} />
+                                        )}
+                                    </Button>                                    
+ 
                                 </div>
                             </div>
 

@@ -9,7 +9,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import Logo from '@/assets/img/landing.jpg'
+import Logo from '@/assets/img/landing-1.webp'
 import { PasswordInput } from '@/components/ui/password-input';
 import { ArrowLeft } from 'lucide-react';
 import AUTH_ROUTES from '../routes/paths';
@@ -37,7 +37,6 @@ const LoginPage = () => {
   const onSubmit = async (data) => {
     try {
       const response = await login(data);
-      console.log('response login', response);
       reset();
       navigate('/dashboard');
     } catch (error) {

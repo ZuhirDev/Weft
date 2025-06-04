@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { disable2FAService, enable2FAService, loginService, logoutService, passwordVerificationService, registerService, verify2FAService } from "@auth/services/authService";
+import { meService, updateCustomerService } from "@/modules/user/service/userService";
 
 const AuthContext = createContext();
  
@@ -8,34 +9,46 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser ] = useState(null);
     const [loading, setLoading] = useState(true); 
     const [needs2FA, setNeeds2FA] = useState(false);
-    const [is2FAEnabled, setIs2FAEnabled] = useState(false);
-    const [emailVerified, setEmailVerified] = useState(false);
 
     const isAuthenticated = !!user;
 
-    /**
-     * REVISAR LA CONFIG DEL USUARIO, PARA NO GUARDAR EN STORAGE 
-     * Y SOLO EN ESTADOS Y CUANDO REFRESCA HACER FETCH
-     */
+    const updateCustomer = async (data) => {
+        try {
+            const response = await updateCustomerService(data);
 
-    /**
-     * CUANDO RECARGO LA PAGINA , SE PIERDE EL AUTH OTP
-     * EN BACKEND CUANDO HAGLO LOGIN/LOGOUT SE ACTUALIZA EL ENABLED DE BD
-     */
+            setUser(response.user);
+            sessionStorage.setItem('user', JSON.stringify(response?.user));
 
+            return response;
+        } catch (error) {
+            throw error;
+        }
+    }
 
     useEffect(() => {
         const storedUser = sessionStorage.getItem('user');
-        const is2FAEnabledStored  = sessionStorage.getItem('2fa_enabled') === 'true';
-        const is2FAVerifiedStored  = sessionStorage.getItem('2fa_verified') === 'true';
+        const needs2FAStored  = sessionStorage.getItem('needs_2fa') === 'true';
 
         if(sessionStorage.getItem('token') && storedUser) setUser(JSON.parse(storedUser));
         
         setLoading(false);
 
-        setNeeds2FA(is2FAVerifiedStored);
-        setIs2FAEnabled(is2FAEnabledStored);
+        setNeeds2FA(needs2FAStored);
     }, []);
+
+    useEffect(() => {
+
+        if(isAuthenticated && needs2FA === false) {
+            const fetchData = async () => {
+                const response = await meService();
+                setUser(response.user);
+                sessionStorage.setItem('user', JSON.stringify(response.user));
+            } 
+
+            fetchData();
+        }
+    }, [isAuthenticated, needs2FA]);
+
 
     const registerUser = async (data) => {
         const response = await registerService(data);
@@ -48,13 +61,12 @@ export const AuthProvider = ({ children }) => {
             const response = await loginService(data);
             if(response.status === 403 && response.token){
                 setNeeds2FA(true);
-                sessionStorage.setItem('2fa_enabled', true);
-                sessionStorage.setItem('2fa_verified', false);
+                sessionStorage.setItem('needs_2fa', 'true');
             }
+
             sessionStorage.setItem('user', JSON.stringify(response.user));
             sessionStorage.setItem('token', response.token);
             setUser(response.user);
-            setEmailVerified(response.user?.email_verified_at);
 
             return response;
         } catch (error) {
@@ -71,39 +83,29 @@ export const AuthProvider = ({ children }) => {
         }finally{
             sessionStorage.removeItem('user');
             sessionStorage.removeItem('token');
-            sessionStorage.removeItem('2fa_enabled');
-            sessionStorage.removeItem('2fa_verified');
+            sessionStorage.removeItem('needs_2fa');
             setUser(null);
         }
-
     }
 
 
     const enable2FA = async () => {
         try {
             const response = await enable2FAService();
-            console.log("response de enable", response);
-            sessionStorage.setItem('2fa_enabled', 'true');
-
 
             return response;
-
         } catch (error) {
             throw error;
         }
-        
     }
 
     const verify2FA = async (otp) => {
-        console.log("otp contex", otp)
         const response = await verify2FAService(otp);
-        console.log("verify2fa context", response);
 
-        sessionStorage.setItem('2fa_verified', 'false');
+        sessionStorage.setItem('needs_2fa', 'false');
         sessionStorage.setItem('user', JSON.stringify(response.user));
         sessionStorage.setItem('token', response.token);
         setNeeds2FA(false);
-        setIs2FAEnabled(true);
         setUser(response.user);
 
         return response
@@ -112,10 +114,8 @@ export const AuthProvider = ({ children }) => {
     const disable2FA = async () => {
         try {
             const response = await disable2FAService();
-            sessionStorage.removeItem('2fa_enabled');
-            sessionStorage.removeItem('2fa_verified');
-            setNeeds2FA(false);
-            setIs2FAEnabled(false);            
+            sessionStorage.removeItem('needs_2fa');
+            setNeeds2FA(false);         
         } catch (error) {
             throw error;
         }
@@ -144,8 +144,8 @@ export const AuthProvider = ({ children }) => {
         disable2FA,
         passwordVerification,
         loading,
-        is2FAEnabled,
-        emailVerified
+        setUser,
+        updateCustomer
     }
 
     return(

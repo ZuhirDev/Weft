@@ -1,4 +1,4 @@
-import { get, post } from '@/utils/xhr';
+import { post } from '@/utils/xhr';
 
 export const registerService = async (data) => {
     const { email, status, type, password, password_confirmation } = data;

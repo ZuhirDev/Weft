@@ -32,6 +32,10 @@ const PasswordReset = () => {
     const params = new URLSearchParams(location.search);
     const { handleSubmit, register, reset, setError, control, formState: { errors, isSubmitting } } = useForm({
         resolver: zodResolver(passwordResetSchema),
+        defaultValues: {
+            password: '',
+            password_confirmation: '',          
+        }
     });
 
     const data = {

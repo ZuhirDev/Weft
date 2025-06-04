@@ -7,7 +7,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 const VisibilityWrapper = ({ children, showButton = false }) => {
   const { isBlurred, toggleBlur } = useVisibility();
 
-  const tooltipText = isBlurred ? 'Mostrar' : 'Ocultar';
+  const tooltipText = isBlurred ? 'Show' : 'Hide';
 
   return (
     <div className="flex items-center ">

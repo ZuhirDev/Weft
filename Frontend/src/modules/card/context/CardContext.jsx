@@ -1,12 +1,11 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useState } from "react";
 import { cardTypesService, createCardService, getAllCardsService } from "@card/services/cardService";
-import { useAuth } from "@auth/context/AuthContext";
+import useAuthEffect from "@/hooks/useAuthEffect";
 
 const CardContext = createContext();
 
 export const CardProvider = ({ children }) => {
 
-    const { isAuthenticated } = useAuth();
     const [cards, setCards] = useState([]);
     const [types, setTypes] = useState([]);
 
@@ -31,7 +30,6 @@ export const CardProvider = ({ children }) => {
         }
     }
 
-    
 
     const createCard = async (data) => {
         try {
@@ -45,9 +43,18 @@ export const CardProvider = ({ children }) => {
         }
     }
 
-    useEffect(() => {
-        // requestIdleCallback(() => isAuthenticated && )
-        getAllCards() && cardTypes()
+    useAuthEffect(() => {
+        const fetchData = async () => {
+            try {
+                await getAllCards();
+                await cardTypes();
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
+        fetchData();
+
     }, []);
 
     const value = {

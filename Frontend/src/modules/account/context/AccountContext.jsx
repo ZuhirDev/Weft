@@ -1,22 +1,20 @@
-import { createContext, useContext, useEffect, useState } from "react";
-import { createAccountService, deleteAccountService, getAllAccountsService, updateAccountService } from "../services/accountService";
-import { useAuth } from "@/modules/auth/context/AuthContext";
+import { createContext, useContext, useState } from "react";
+import { accountChartService, createAccountService, deleteAccountService, getAllAccountsService, updateAccountService } from "@account/services/accountService";
 import useModal from "@/hooks/useModal";
 import Loading from "@/components/Loading";
 import socketService from "@/lib/socketService";
 import { toast } from "sonner";
+import useAuthEffect from "@/hooks/useAuthEffect";
 
 const AccountContext = createContext();
 
 export const AccountProvider = ({ children }) => {
 
-    const { isAuthenticated } = useAuth();
     const [accounts, setAccounts] = useState([]);
     const [selectedAccount, setSelectedAccount] = useState(null);
     const { isOpen, open, close } = useModal();
 
-
-    useEffect(() => {
+    useAuthEffect(() => {
 
         if (!accounts?.length) return;
 
@@ -24,7 +22,6 @@ export const AccountProvider = ({ children }) => {
             const channel = socketService.subscribeToPrivate(`account.${account.id}`)
             
             channel.listen('.transaction-completed', (e) => {
-                console.log("eventaso", e.message)
                 toast.success(e.message)
                 transactionEvent(e);
             });
@@ -38,8 +35,23 @@ export const AccountProvider = ({ children }) => {
             });
         };
 
+        
     }, [accounts]);
 
+    useAuthEffect(() => {
+        const fetchData = async () => {
+            try {
+                await getAllAccounts();
+
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
+        fetchData();
+
+    }, []);
+    
     const transactionEvent = (e) => {
 
         setAccounts((prevAccounts) => {
@@ -63,6 +75,7 @@ export const AccountProvider = ({ children }) => {
         try {
             const response = await getAllAccountsService();
             setAccounts(response.accounts);
+            setSelectedAccount(response.accounts[0]);
             return response.accounts;
         } catch (error) {
             throw error;
@@ -74,11 +87,6 @@ export const AccountProvider = ({ children }) => {
     const changeSelectedAccount = (account)  => setSelectedAccount(account);
     
 
-    useEffect(() => {
-        requestIdleCallback(() => isAuthenticated && getAllAccounts())
-    }, [isAuthenticated]);
-
-    
     const createAccount = async (data) => {
         try {
             const response = await createAccountService(data);
@@ -124,6 +132,16 @@ export const AccountProvider = ({ children }) => {
         } 
     }
 
+    const accountChart = async (data) => {
+        try {
+            const response = await accountChartService(data);
+
+            return response;
+        } catch (error) {
+            throw error;
+        }
+    }
+
     if(isOpen) return <Loading isOpen={isOpen} />
 
     const value = {
@@ -135,6 +153,7 @@ export const AccountProvider = ({ children }) => {
         getAllAccounts,
         refreshAccounts,
         deleteAccount,
+        accountChart,
     }
 
     return(

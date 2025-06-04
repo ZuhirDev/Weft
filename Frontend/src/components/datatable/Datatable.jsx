@@ -24,7 +24,7 @@ const Datatable = ({ columns, remote, initialSorting }) => {
 
   const [debouncedGlobalFilter] = useDebounce(globalFilter, 300);
   const [debouncedColumnFilters] = useDebounce(columnFilters, 300);
-  const [debouncedSorting] = useDebounce(sorting, 300);
+  const [debouncedSorting] = useDebounce(sorting, 0);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -52,7 +52,7 @@ const Datatable = ({ columns, remote, initialSorting }) => {
       setData(response.data.data);
       setRowCount(response.data.totalCount);
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error('Error', error);
     } finally {
       setLoading(false);
     }
@@ -107,84 +107,87 @@ const Datatable = ({ columns, remote, initialSorting }) => {
     state: { sorting, columnFilters, globalFilter, columnVisibility, rowSelection, pagination },
   });
 
-  return (
-    <div className="space-y-4">
-      <DatatableToolbar table={table} handleExportCSV={handleExportCSV} />
+return (
+  <div className="space-y-4">
+    <DatatableToolbar table={table} handleExportCSV={handleExportCSV} />
 
-      <div className="rounded-md border border-gray-200">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map(headerGroup => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map(header => (
-                  <TableHead key={header.id}>
-                    <div className="flex items-center space-x-2">
-                      {!header.isPlaceholder && (
-                        <div
-                          className={header.column.getCanSort() ? "flex cursor-pointer select-none items-center" : ""}
-                          onClick={header.column.getToggleSortingHandler()}
-                        >
-                          {flexRender(header.column.columnDef.header, header.getContext())}
-                          {header.column.getCanSort() && (
-                            <span className="ml-1">
-                              {header.column.getIsSorted() === 'asc' ? (
-                                <ArrowUp className="h-4 w-4" />
-                              ) : header.column.getIsSorted() === 'desc' ? (
-                                <ArrowDown className="h-4 w-4" />
-                              ) : (
-                                <ChevronsUpDown className="h-4 w-4 text-muted-foreground" />
-                              )}
-                            </span>
-                          )}
-                        </div>
-                      )}
-                      {header.column.getCanFilter() && (
-                        <DatatableColumnFilter column={header.column} />
-                      )}
-                    </div>
-                  </TableHead>
+    <div className="rounded-md border border-gray-200 dark:border-zinc-700 overflow-auto">
+      <Table className="min-w-full">
+        <TableHeader>
+          {table.getHeaderGroups().map(headerGroup => (
+            <TableRow key={headerGroup.id}>
+              {headerGroup.headers.map(header => (
+                <TableHead key={header.id} className="whitespace-nowrap">
+                  <div className="flex items-center space-x-2">
+                    {!header.isPlaceholder && (
+                      <div
+                        className={`${
+                          header.column.getCanSort()
+                            ? "flex cursor-pointer select-none items-center"
+                            : "flex items-center"
+                        }`}
+                        onClick={header.column.getToggleSortingHandler()}
+                      >
+                        {flexRender(header.column.columnDef.header, header.getContext())}
+                        {header.column.getCanSort() && (
+                          <span className="ml-1">
+                            {header.column.getIsSorted() === "asc" ? (
+                              <ArrowUp className="h-4 w-4" />
+                            ) : header.column.getIsSorted() === "desc" ? (
+                              <ArrowDown className="h-4 w-4" />
+                            ) : (
+                              <ChevronsUpDown className="h-4 w-4 text-muted-foreground" />
+                            )}
+                          </span>
+                        )}
+                      </div>
+                    )}
+                    {header.column.getCanFilter() && <DatatableColumnFilter column={header.column} />}
+                  </div>
+                </TableHead>
+              ))}
+            </TableRow>
+          ))}
+        </TableHeader>
+
+        <TableBody>
+          {loading ? (
+            <TableRow>
+              <TableCell colSpan={columns.length}>
+                <div className="flex justify-center items-center h-40">
+                  <Loader2 className="animate-spin h-8 w-8 text-white-500 dark:text-zinc-400" />
+                </div>
+              </TableCell>
+            </TableRow>
+          ) : table.getRowModel().rows.length ? (
+            table.getRowModel().rows.map(row => (
+              <TableRow
+                key={row.id}
+                data-state={row.getIsSelected() && "selected"}
+                className="dark:hover:bg-zinc-900 transition-colors duration-150"
+              >
+                {row.getVisibleCells().map(cell => (
+                  <TableCell key={cell.id} className="whitespace-nowrap">
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
                 ))}
               </TableRow>
-            ))}
-          </TableHeader>
-
-          <TableBody>
-            {loading ? (
-              <TableRow>
-                <TableCell colSpan={columns.length}>
-                  <div className="flex justify-center items-center h-40">
-                    <Loader2 className="animate-spin h-8 w-8 text-gray-500" />
-                  </div>
-                </TableCell>
-              </TableRow>
-            ) : table.getRowModel().rows.length ? (
-              table.getRowModel().rows.map(row => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                  className="hover:bg-gray-50"
-                >
-                  {row.getVisibleCells().map(cell => (
-                    <TableCell key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
-                  No se encontraron resultados.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
-
-      <DatatableFooter table={table} />
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={columns.length} className="h-24 text-center text-gray-600 dark:text-zinc-400">
+                No results found.
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
     </div>
-  );
+
+    <DatatableFooter table={table} />
+  </div>
+);
+
 };
 
 export default Datatable;

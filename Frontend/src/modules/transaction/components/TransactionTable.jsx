@@ -40,28 +40,23 @@ const TransactionTable = () => {
         {
             id: "transactions.created_at",
             accessorKey: "created_at",
-            header: "Fecha",
+            header: "Date",
             cell: ({ row }) => format(new Date(row.original.created_at), "dd/MM/yyyy HH:mm"),
         },
         {
             id: "transactions.type",
             accessorKey: "type",
-            header: "Tipo",
-        },  
-        {
-            id: "transactions.movement",
-            accessorKey: "movement",
-            header: "Movimiento",
-        },  
+            header: "Type",
+        },   
         {
             id: "transactions.status",
             accessorKey: "status",
-            header: "Estado",
+            header: "Status",
         },  
         {
             id: "transactions.amount",
             accessorKey: "amount",
-            header: "Monto",
+            header: "Amount",
             cell: ({ row }) => {
                 const amount = parseFloat(row.original.amount);
                 return (
@@ -74,12 +69,12 @@ const TransactionTable = () => {
         {
             id: "transactions.reference",
             accessorKey: "reference",
-            header: "Referencia",
+            header: "Reference",
         },
         {
             id: "transactions.origin_account_id",
             accessorKey: "origin_account_id",
-            header: 'Cuenta origin',
+            header: 'Origin account',
             multiSelectOptions: accounts,
             multiSelectDisplayField: "alias",
             enableMultiSelect: true,
@@ -89,7 +84,7 @@ const TransactionTable = () => {
         {
             id: "transactions.destination_account_id",
             accessorKey: "destination_account_id",
-            header: 'Cuenta destino',
+            header: 'Destination account',
             multiSelectOptions: accounts,
             multiSelectDisplayField: "alias",
             enableMultiSelect: true,
@@ -99,7 +94,7 @@ const TransactionTable = () => {
         {
             id: "transactions.card_id",
             accessorKey: "card_id",
-            header: 'tarjeta',
+            header: 'Card',
             multiSelectOptions: cards,
             multiSelectDisplayField: "alias",
             enableMultiSelect: true,
@@ -109,7 +104,7 @@ const TransactionTable = () => {
         {
             id: 'transactions.concept',
             accessorKey: 'concept',
-            header: 'concept',
+            header: 'Concept',
         }
     ], []);
 

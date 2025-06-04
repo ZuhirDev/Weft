@@ -1,28 +1,43 @@
 import React from 'react';
 import { useUser } from '@user/context/UserContext';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
+import { Loader2 } from 'lucide-react';
+import useLoading from '@/hooks/useLoading';
 
 const SendVerifyEmail = () => {
-  /** mostrar errores del backend  */
 
   const { t } = useTranslation();
   const { sendVerifyEmail } = useUser();
+  const { isLoading, startLoading, stopLoading } = useLoading();
 
   const handleSendVerifyEmail = async () => {
-    const response = await sendVerifyEmail();
+    startLoading();
+
+    try {
+      const response = await sendVerifyEmail();
+      toast.success(response?.message);
+    } catch (error) {
+      toast.error(error.response?.data?.message);
+    }finally{
+      stopLoading();
+    }
   }
 
   return (
-    <div>
-      <button 
-      onClick={handleSendVerifyEmail}
-      type="button" 
-      className="text-gray-900 bg-gradient-to-r mt-10 from-lime-200 via-lime-400 to-lime-500 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-lime-300 dark:focus:ring-lime-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
+    <>
+      <Button
+        type="button"
+        onClick={handleSendVerifyEmail}
+        disabled={isLoading}
+        className="destructive"
       >
-        {t('auth:send_verification_email')}
-      </button>
-    </div>
-  )
+        {isLoading && <Loader2 className='mr-2 h-4 w-4 animate-spin' /> }
+        Send Verification Email
+      </Button> 
+    </>
+  );
 }
 
 export default SendVerifyEmail;

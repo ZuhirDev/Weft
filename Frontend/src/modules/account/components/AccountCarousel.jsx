@@ -44,7 +44,9 @@ const AccountCarousel = () => {
 
             <div className="mt-2">
               <div className="text-2xl font-bold">
-                <VisibilityWrapper children={new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(account.balance)} />
+                <VisibilityWrapper >
+                  {new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(account.balance)}                
+                </VisibilityWrapper>
               </div>
               <div className="text-sm text-muted-foreground mt-1">
                 {account.iban.slice(0, 4)}...{account.iban.slice(-4)}

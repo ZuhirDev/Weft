@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { REGEXP_ONLY_DIGITS } from 'input-otp';
@@ -9,7 +9,6 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@auth/context/AuthContext';
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog"
 import { useTranslation } from 'react-i18next';
-
 
 
 const Verify2FA = () => {
@@ -25,7 +24,25 @@ const Verify2FA = () => {
   });
 
   const onSubmit = async (data) => {
-    const response = await verify2FA(data.otp); 
+    try {
+      const response = await verify2FA(data.otp); 
+      
+    }catch (error) {
+      const { errors: responseErrors, message: generalMessage } = error.response?.data || {};
+
+      if (responseErrors) {
+        Object.keys(responseErrors).forEach((key) => {
+          form.setError(key, { type: 'manual', message: responseErrors[key] });
+        });
+      }
+
+      if (generalMessage) {
+        form.setError('root', {
+          type: 'manual',
+          message: generalMessage,
+        });
+      }      
+    }
   }
 
   return (
@@ -46,7 +63,6 @@ const Verify2FA = () => {
                   name="otp"
                   render={({ field }) => (
                     <FormItem>
-                      {/* <FormLabel>Verify Two-Factor Authentication</FormLabel> */}
                       <FormControl>
                         <InputOTP maxLength={6} {...field} pattern={REGEXP_ONLY_DIGITS}>
                           <InputOTPGroup>
@@ -66,7 +82,11 @@ const Verify2FA = () => {
                     </FormItem>
                   )}
                 />
-    
+
+                {form.formState.errors?.root && (
+                  <p className="text-sm text-red-500 mt-1">{form.formState.errors.root.message}</p>
+                )}    
+ 
                 <Button 
                   className="w-full py-3 rounded-md  focus:outline-none text-md"
                   type="submit"
@@ -77,37 +97,6 @@ const Verify2FA = () => {
             </Form>
           </DialogContent>
         </Dialog>
-      {/* <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="w-2/3 space-y-6">
-          <FormField
-            control={form.control}
-            name="otp"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Verify Two Factor Authentication</FormLabel>
-                <FormControl>
-                  <InputOTP maxLength={6} {...field} pattern={REGEXP_ONLY_DIGITS}>
-                    <InputOTPGroup>
-                      <InputOTPSlot index={0} />
-                      <InputOTPSlot index={1} />
-                      <InputOTPSlot index={2} />
-                      <InputOTPSlot index={3} />
-                      <InputOTPSlot index={4} />
-                      <InputOTPSlot index={5} />
-                    </InputOTPGroup>
-                  </InputOTP>
-                </FormControl>
-                <FormDescription>
-                  Please enter the one-time password.
-                </FormDescription>
-                <FormMessage />            
-              </FormItem>
-            )}
-          />
-
-          <Button type="submit">Submit</Button>
-        </form>
-      </Form> */}
     </>
   );
 }
