@@ -11,6 +11,7 @@ use App\Services\AccountService;
 use App\Services\AccountTransactionService;
 use App\Services\CardService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AccountController extends Controller
@@ -56,20 +57,34 @@ class AccountController extends Controller
         ]);
     }
 
-
     public function store(StoreRequest $request)
     {
-        dd("aaaa");
-        $account = $this->accountService->createAccount($this->user->id, $request->validated());
+        return DB::transaction(function () use ($request) {
 
-        if(!$account) return response()->json(['message' => __('account/messages.account_creation_failed')]);
+            $account = $this->accountService->createAccount($this->user->id, $request->validated());
 
-        $account  = $this->accountService->formatSingleAccount($account, $this->user->name);
+            if (!$account) {
+                return response()->json(['message' => __('account/messages.account_creation_failed')]);
+            }
 
-        return response()->json([
-            'message' => __('account/messages.account_created'),
-            'account' => $account,
-        ]);
+            $cardData = [
+                'alias' => "Débito de {$this->user->name}",
+                'type' => 'debit'
+            ];
+
+            $card = $this->cardService->createCard($account, $cardData, $this->user->name);
+
+            if (!$card) {
+                return response()->json(['message' => 'Card creation failed'], 500);
+            }
+
+            $account = $this->accountService->formatSingleAccount($account, $this->user->name);
+
+            return response()->json([
+                'message' => __('account/messages.account_created'),
+                'account' => $account,
+            ]);
+        });
     }
 
     public function addHolder(Request $request) /// terminar implementación

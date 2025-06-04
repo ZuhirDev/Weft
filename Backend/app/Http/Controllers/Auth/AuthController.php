@@ -5,14 +5,13 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
+use App\Models\Customer;
 use App\Models\User;
 use App\Services\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\Facades\JWTAuth;
-
-/** CUANDO EN LA SOLICITUD NO HAYA TOKEN PONER ALGUN MENSAJE DE TOKEN INVALIDAO */
 
 class AuthController extends Controller
 {
@@ -61,7 +60,9 @@ class AuthController extends Controller
             ], 401);
         }
 
-        $user = JWTAuth::user();
+        $user = User::UserInfo()
+                ->where('users.id', JWTAuth::user()->id)
+                ->first();
 
         if($user->google2fa_secret){
             return response()->json([
@@ -73,7 +74,7 @@ class AuthController extends Controller
         }
 
         return response()->json([
-            "message" => __('auth.login_successful', ['name' => $user->email]), /// PONER EL NOMBRE
+            "message" => __('auth.login_successful', ['name' => $user->name]), 
             "user" => $user,
             "token" => $token,
         ], 200);
@@ -105,7 +106,9 @@ class AuthController extends Controller
      */
     public function me()
     {
-        $user = JWTAuth::user();
+        $user = User::UserInfo()
+                      ->where('users.id', JWTAuth::user()->id)
+                      ->first();
 
         return response()->json([
             "message" => __('auth.user_info_retrieved'),
@@ -115,14 +118,15 @@ class AuthController extends Controller
 
     public function validatePassword(Request $request)
     {
-        $user = JWTAuth::user();
+        $user = User::UserInfo()
+                      ->where('users.id', JWTAuth::user()->id)
+                      ->first();
 
         if(!Hash::check($request->password, $user->password)){
             return response()->json([
                 'message' => 'Contraseña incorrecta',
             ], 401);
         }
-
         
         return response()->json([
             'message' => 'Contraseña válida',

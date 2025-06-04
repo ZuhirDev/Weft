@@ -25,6 +25,8 @@ class CardFactory extends Factory
             'expiration_date' => $this->faker->dateTimeBetween('+1 year', '+5 years')->format('Y-m-d'),
             'status' => 'active',
             'type' => $this->faker->randomElement(['debit', 'credit']),
+            'alias' => $this->faker->word(),
+            'holder' => $this->faker->name(),
         ];
     }
 }

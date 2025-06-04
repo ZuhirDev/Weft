@@ -17,6 +17,7 @@ return new class extends Migration
 
             $table->string('alias');
             $table->string('pin');
+            $table->string('holder');
             $table->string('card_number', 16)->unique();
             $table->string('cvv', 3);
             $table->date('expiration_date');

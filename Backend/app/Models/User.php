@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Notifications\Auth\ResetPasswordNotification;
 use App\Notifications\Auth\VerifyEmailNotification;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -10,13 +9,12 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-// use Spatie\Permission\Traits\HasRoles;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
 class User extends Authenticatable implements JWTSubject
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable,  SoftDeletes; //HasRoles,
+    use HasFactory, Notifiable,  SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -76,13 +74,13 @@ class User extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims()
     {
         return [
-            // 'role' => $this->type, // Por ejemplo, podrías agregar un "role" a los claims
+            
         ];
     }
 
     public function is2FAEnabled()
     {
-        return $this->google2fa_enabled; // mirar methos de jwt y claims
+        return $this->google2fa_enabled;
     }
 
     public function employee():HasOne
@@ -92,7 +90,35 @@ class User extends Authenticatable implements JWTSubject
 
     public function customer():HasOne
     {
-        return $this->hasOne(Customer::class);
+        return $this->hasOne(Customer::class, 'user_id', 'id');
     }
     
+    public function scopeUserInfo($query)
+    {
+        return $query->select(
+            'users.id',
+            'users.email',
+            'users.email_verified_at',
+            'users.status',
+            'users.password',
+            'users.google2fa_secret',
+            'users.google2fa_enabled',
+            'users.remember_token',
+            'users.type',
+            'users.created_at',
+            'users.updated_at',
+            'users.deleted_at',
+            'customers.id as customer_id',
+            'customers.name',
+            'customers.last_name',
+            'customers.dni',
+            'customers.date_of_birth',
+            'customers.gender',
+            'customers.phone',
+            'customers.address',
+            'customers.occupation',
+            'customers.avatar'
+        )->join('customers', 'customers.user_id', '=', 'users.id');
+    }
+
 }

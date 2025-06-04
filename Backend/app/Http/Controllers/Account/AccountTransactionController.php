@@ -12,7 +12,9 @@ use App\Models\Customer;
 use App\Models\Transaction;
 use App\Services\AccountService;
 use App\Services\AccountTransactionService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AccountTransactionController extends Controller
@@ -143,8 +145,6 @@ class AccountTransactionController extends Controller
 
         $table = Transaction::AllCustomerTransactions($customer);
 
-            //   dd($table->limit(1)->get());
-
         return Datatable::of($table)
                           ->toResponse();
     }
@@ -157,4 +157,45 @@ class AccountTransactionController extends Controller
             'transactions' => $transactions,
         ]);
     }
+
+    public function balanceHistoryLast30Days(Request $request)
+    {
+        $accountId = $request->get('account_id');
+
+        $account = Account::findOrFail($accountId);
+
+        $startDate = Carbon::now()->subDays(30)->toDateString();
+
+        $dailyMovements = DB::table('transactions')
+            ->selectRaw('DATE(created_at) as date')
+            ->selectRaw('SUM(CASE WHEN destination_account_id = ? THEN amount ELSE 0 END) as total_in', [$accountId])
+            ->selectRaw('SUM(CASE WHEN origin_account_id = ? THEN amount ELSE 0 END) as total_out', [$accountId])
+            ->where(function ($query) use ($accountId) {
+                $query->where('origin_account_id', $accountId)
+                    ->orWhere('destination_account_id', $accountId);
+            })
+            ->where('status', 'completed')
+            ->whereDate('created_at', '>=', $startDate)
+            ->groupBy('date')
+            ->orderBy('date')
+            ->get();
+
+        $runningBalance = 0;
+        $balanceHistory = $dailyMovements->map(function ($item) use (&$runningBalance) {
+            $net = $item->total_in - $item->total_out;
+            $runningBalance += $net;
+
+            return [
+                'date' => $item->date,
+                'balance' => round($runningBalance, 2),
+            ];
+        });
+
+        return response()->json([
+            'message' => '',
+            'data' => $balanceHistory,
+        ]);
+    }
+
+
 }

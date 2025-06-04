@@ -24,7 +24,6 @@ return new class extends Migration
             $table->enum('type', ['deposit', 'withdrawal', 'transfer', 'fee', 'card_payment'])->default('transfer');
             $table->string('concept')->nullable();
             $table->string('category')->nullable();
-            $table->enum('movement', ['sent', 'received']);
 
             $table->timestamps();
             $table->softDeletes();

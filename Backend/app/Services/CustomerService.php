@@ -29,22 +29,22 @@ class CustomerService{
         ]);
     }
 
-    public function updateCustomer(Customer $customer, array $data): Customer
+    public function updateCustomer(Customer $customer, array $data)
     {
-        return Customer::create([
-            'name' => $data['name'],
-            'last_name' => $data['last_name'],
-            'date_of_birth' => $data['date_of_birth'],
-            'gender' => $data['gender'],
-            'dni' => $data['dni'],
-            'phone' => $data['phone'],
-            'address' => $data['address'],
-            'occupation' => $data['occupation'],
-            'avatar' => $data['avatar'] ?? null,
+        $customer->update([
+            'name' => $data['name'] ?? $customer->name,
+            'last_name' => $data['last_name'] ?? $customer->last_name,
+            'date_of_birth' => $data['date_of_birth'] ?? $customer->date_of_birth,
+            'gender' => $data['gender'] ?? $customer->gender,
+            'dni' => $data['dni'] ?? $customer->dni,
+            'phone' => $data['phone'] ?? $customer->phone,
+            'address' => $data['address'] ?? $customer->address,
+            'occupation' => $data['occupation'] ?? $customer->occupation,
+            'avatar' => $data['avatar'] ?? $customer->avatar,
         ]);
+
+        return $customer;
     }
-
-
     
     public function formatUserCustomer(User $user, Customer $customer): array
     {

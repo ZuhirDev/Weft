@@ -22,7 +22,7 @@ class StoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'alias' => 'nullable|string|max:255',  
+            'alias' => 'required|string|max:255',  
             'type' => 'required|in:checking,savings,investment', 
         ];
     }

@@ -23,7 +23,7 @@ class CreateCardRequest extends FormRequest
     {
         return [
             'iban' => 'required|string|exists:accounts,iban',
-            'alias' => 'nullable|string|max:255',
+            'alias' => 'required|string|max:255',
             'type' => 'required|in:debit,credit',
         ];
     }

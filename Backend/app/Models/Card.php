@@ -19,6 +19,7 @@ class Card extends Model
         'status',
         'type',
         'pin',
+        'holder',
     ];
 
     protected $casts = [

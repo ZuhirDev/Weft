@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Account;
 use App\Models\Transaction;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
 use Faker\Factory as Faker;
@@ -28,16 +28,23 @@ class TransactionSeeder extends Seeder
         })->first();
 
         if($carlosAccount){
-            Transaction::create([
-                'origin_account_id' => $carlosAccount->id,
-                'destination_account_id' => $lauraAccount->id, 
-                'card_id' => null,
-                'reference' => Str::random(8),
-                'amount' => $faker->randomFloat(2, 10, 1000),
-                'status' => 'completed',
-                'concept' => $faker->sentence(),
-                'movement' => 'sent',
-            ]);
+            for ($i = 0; $i < 30; $i++) {
+    for ($i = 0; $i < 30; $i++) {
+        $date = Carbon::now()->subDays($i);
+
+        Transaction::create([
+            'origin_account_id' => $carlosAccount->id,
+            'destination_account_id' => $lauraAccount ? $lauraAccount->id : null,
+            'card_id' => null,
+            'reference' => Str::random(8),
+            'amount' => $faker->randomFloat(2, 10, 1000),
+            'status' => 'completed',
+            'concept' => $faker->sentence(),
+            'created_at' => $date,
+            'updated_at' => $date,
+        ]);
+    }
+            }
 
             $card = $carlosAccount->cards()->first();
 
@@ -49,7 +56,6 @@ class TransactionSeeder extends Seeder
                 'amount' => $faker->randomFloat(2, 10, 1000),
                 'status' => 'completed',
                 'concept' => $faker->sentence(),
-                'movement' => 'received',
             ]);
         }
 
@@ -62,7 +68,6 @@ class TransactionSeeder extends Seeder
                 'amount' => $faker->randomFloat(2, 10, 1000),
                 'status' => 'completed',
                 'concept' => $faker->sentence(),
-                'movement' => 'sent',
             ]);
 
             $card = $lauraAccount->cards()->first();
@@ -75,7 +80,6 @@ class TransactionSeeder extends Seeder
                 'amount' => $faker->randomFloat(2, 10, 1000),
                 'status' => 'completed',
                 'concept' => $faker->sentence(),
-                'movement' => 'received',
             ]);
         }
     }

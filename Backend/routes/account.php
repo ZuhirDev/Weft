@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\Account\AccountTransactionController;
 use App\Http\Controllers\Account\AccountController;
-use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
 
 
@@ -30,4 +29,5 @@ Route::middleware(['auth:api', '2fa'])->group(function(){
 
     Route::get('transactions', [AccountTransactionController::class, 'all']);
     Route::get('transactions/latest', [AccountTransactionController::class, 'getLatestTransactions']);
+    Route::post('transactions/history', [AccountTransactionController::class, 'balanceHistoryLast30Days']);
 });

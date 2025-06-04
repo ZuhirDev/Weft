@@ -54,6 +54,7 @@ class CardService{
             'expiration_date' => $card->expiration_date->format('m/Y'),
             'status' => $card->status,
             'type' => $card->type,
+            'holder' => $card->holder,
         ];
     }
 
@@ -62,7 +63,7 @@ class CardService{
         return $cards->map(fn($card) => $this->formatSingleCard($card))->toArray();
     }
 
-    public function createCard(Account $account, array $data)
+    public function createCard(Account $account, array $data, string $holderName)
     {
         $cardNumber = self::generateCard();
         $ccv = self::generateCVV();
@@ -74,9 +75,10 @@ class CardService{
             'cvv' => $ccv,
             'expiration_date' => now()->addYears(5),
             'alias' => $data['alias'] ?? null,
-            'status' => 'blocked',
+            'status' => 'active',
             'type' => $data['type'] ?? 'debit',
             'pin' => Crypt::encryptString($pin),
+            'holder' => $holderName,
         ]);
 
         return $card;

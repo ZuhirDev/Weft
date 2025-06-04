@@ -36,7 +36,8 @@ class CardSeeder extends Seeder
                 'expiration_date' => now()->addYears(5),
                 'status' => 'active',
                 'type' => 'debit',
-                'pin' => Crypt::encryptString($faker->numberBetween(1000, 9999)),  
+                'pin' => Crypt::encryptString($faker->numberBetween(1000, 9999)), 
+                'holder' => 'Carlos Sánchez'
             ]);
         }
 
@@ -44,12 +45,13 @@ class CardSeeder extends Seeder
             Card::create([
                 'account_id' => $lauraAccount->id,
                 'alias' => 'Compras',
-                'card_number' => $faker->creditCardNumber(),
+                'card_number' => $faker->numerify('################'),
                 'cvv' => $faker->numberBetween(100, 999),
                 'expiration_date' => now()->addYears(5),
                 'status' => 'active',
                 'type' => 'debit',
-                'pin' => Crypt::encryptString($faker->numberBetween(1000, 9999)),  
+                'pin' => Crypt::encryptString($faker->numberBetween(1000, 9999)),
+                'holder' => 'Laura Martínez'
             ]);
         }
     }

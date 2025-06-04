@@ -17,7 +17,7 @@ class AccountFactory extends Factory
     public function definition(): array
     {
         return [
-            'alias' => $this->faker->optional()->word(),
+            'alias' => $this->faker->word(),
             'iban' => $this->faker->unique()->iban('ES'),
             'balance' => $this->faker->randomFloat(2, 0, 10000),
             'swift' => strtoupper($this->faker->bothify('????ESMMXXX')),

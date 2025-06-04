@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use PragmaRX\Google2FALaravel\Google2FA;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
@@ -27,7 +26,9 @@ class TwoFactorAuthController extends Controller
      */
     public function enable2FA(Request $request)
     {
-        $user = Auth::user();
+        $user = User::UserInfo()
+                      ->where('users.id', JWTAuth::user()->id)
+                      ->first();        
 
         if($user->google2fa_secret){
             return response()->json(['message' => __('auth.2fa.already_enabled')]);
@@ -64,7 +65,9 @@ class TwoFactorAuthController extends Controller
             'one_time_password' => 'required|numeric|digits:6',
         ]);
         
-        $user = Auth::user();
+        $user = User::UserInfo()
+                ->where('users.id', JWTAuth::user()->id)
+                ->first();
 
         JWTAuth::invalidate(JWTAuth::getToken());
         
@@ -79,7 +82,7 @@ class TwoFactorAuthController extends Controller
         ]);
 
         $newToken = JWTAuth::fromUser($user);
-
+                
         return response()->json([
             'message' => __('auth.2fa.enabled_successfully'),
             'token' => $newToken,
@@ -96,7 +99,9 @@ class TwoFactorAuthController extends Controller
      */    
     public function disable2FA(Request $request)
     {
-        $user = Auth::user();
+        $user = User::UserInfo()
+                      ->where('users.id', JWTAuth::user()->id)
+                      ->first();
 
         if(!$user->google2fa_secret) return response()->json(['message' => __('auth.2fa.already_disabled')], 422);
 

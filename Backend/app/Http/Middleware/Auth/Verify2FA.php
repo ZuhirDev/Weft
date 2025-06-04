@@ -2,10 +2,11 @@
 
 namespace App\Http\Middleware\Auth;
 
+use App\Models\User;
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class Verify2FA
 {
@@ -16,7 +17,9 @@ class Verify2FA
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $user = Auth::user();
+        $user = User::UserInfo()
+                    ->where('users.id', JWTAuth::user()->id)
+                    ->first();
 
         if(!$user || ($user->google2fa_secret &&!$user->google2fa_enabled)){
             return response()->json([

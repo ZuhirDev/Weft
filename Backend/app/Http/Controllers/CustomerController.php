@@ -6,12 +6,15 @@ use App\Http\Requests\Customer\StoreCustomerRequest;
 use App\Http\Requests\Customer\StoreUserCustomerRequest;
 use App\Http\Requests\Customer\UpdateUserCustomerRequest;
 use App\Models\Customer;
+use App\Models\User;
 use App\Services\AccountService;
 use App\Services\CardService;
 use App\Services\CustomerService;
 use App\Services\UserService;
 use Illuminate\Http\Request;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use Illuminate\Support\Facades\DB;
+
 
 class CustomerController extends Controller
 {
@@ -40,59 +43,74 @@ class CustomerController extends Controller
 
     public function storeUserAndCustomer(StoreUserCustomerRequest $request)
     {
-        $user = $this->userService->createUser($request->validated());
+        return DB::transaction(function () use ($request) {
 
-        if(!$user) return response()->json(['message' => 'User creation failed'], 500);
+            $user = $this->userService->createUser($request->validated());
+            if (!$user) {
+                return response()->json(['message' => 'User creation failed'], 500);
+            }
 
-        $customer = $this->customerService->createCustomer($user->id, $request->validated());
+            $customer = $this->customerService->createCustomer($user->id, $request->validated());
+            if (!$customer) {
+                return response()->json(['message' => 'Customer creation failed'], 500);
+            }
 
-        if(!$customer) return response()->json(['message' => 'Customer creation failed'], 500);
+            $formatted = $this->customerService->formatUserCustomer($user, $customer);
 
-        $formatted = $this->customerService->formatUserCustomer($user, $customer);
+            $defaultAccountData = [
+                'alias' => "Cuenta de {$customer->name}",
+                'type' => 'checking',
+            ];
 
-        $defaultAccountData = [
-            'alias' => "Cuenta de {$customer->name}", // LANG
-            'type' => 'checking',
-        ];
+            $account = $this->accountService->createAccount($customer->id, $defaultAccountData);
+            if (!$account) {
+                return response()->json(['message' => __('account/messages.account_creation_failed')], 500);
+            }
 
-        $account = $this->accountService->createAccount($customer->id, $defaultAccountData);
+            $defaultCardData = [
+                'alias' => "Tarjeta Débito de {$customer->name}",
+                'type' => 'debit'
+            ];
 
-        if(!$account) return response()->json(['message' => __('account/messages.account_creation_failed')]);
+            $card = $this->cardService->createCard($account, $defaultCardData, $customer->name);
+            if (!$card) {
+                return response()->json(['message' => 'Card creation failed'], 500);
+            }
 
-        $defaultCardData = [
-            'alias' => "Tarjeta Débito de {$customer->name}",
-            'type' => 'debit'
-        ];
-
-        $card = $this->cardService->createCard($account, $defaultCardData);
-
-        return response()->json([
-            'message' => 'User created successfully',
-            'customer' => $formatted,
-        ], 201);
+            return response()->json([
+                'message' => 'User created successfully',
+                'customer' => $formatted,
+            ], 201);
+        });
     }
 
     public function updateUserAndCustomer(UpdateUserCustomerRequest $request)
     {
         $customer = Customer::where('user_id', JWTAuth::user()->id)->first();
 
-        $customer->update($request->validated());
+        $customer = $this->customerService->updateCustomer($customer, $request->validated());
 
+        $user = User::UserInfo()
+                      ->where('users.id', JWTAuth::user()->id)
+                      ->first();
+                              
         return response()->json([
             'message' => 'User updated successfully',
-            'customer' => $customer,
+            'user' => $user,
         ], 201);
     }
 
     public function getCustomer()
     {
-        $customer = Customer::where('user_id', JWTAuth::user()->id)->first();
+        $user = User::UserInfo()
+                ->where('users.id', JWTAuth::user()->id)
+                ->first();
 
-        $customer = $this->customerService->getCustomer($customer->id);
+        $user = $this->customerService->getCustomer($user->id);
 
         return response()->json([
             'message' => 'Customer retrieved successfully.',
-            'customer' => $customer,
+            'customer' => $user,
         ], 200);
 
     }

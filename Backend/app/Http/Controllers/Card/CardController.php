@@ -65,7 +65,7 @@ class CardController extends Controller
         
         if (!$account) return response()->json(['message' => __('account/messages.account_not_found')], 404);
 
-        $card = $this->cardService->createCard($account, $request->validated());
+        $card = $this->cardService->createCard($account, $request->validated(), $this->user->name);
         
         $formattedCard = $this->cardService->formatSingleCard($card);
 

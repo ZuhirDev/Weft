@@ -22,9 +22,11 @@ class UpdateUserCustomerRequest extends FormRequest
     public function rules(): array
     {
         return [            
-            'email' => 'sometimes|nullable|nullable|email|unique:users,email',            
+            'email' => 'sometimes|nullable|email|unique:users,email',            
             'name' => 'sometimes|nullable|string|max:100',
             'last_name' => 'sometimes|nullable|string|max:100',
+            'dni' => 'sometimes|string|size:9|unique:customers,dni',
+            'date_of_birth' => 'sometimes|date',
             'gender' => 'sometimes|nullable|in:male,female,unspecified',
             'phone' => 'sometimes|nullable|string|max:15',
             'address' => 'sometimes|nullable|string|max:100',
