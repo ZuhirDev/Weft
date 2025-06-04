@@ -1,30 +1,73 @@
-import { createContext, useContext } from "react";
-import { forgotPasswordService, meService, passwordResetService, sendVerifyEmailService, updatePasswordService, verifyEmailService } from "@user/service/userService";
+import { createContext, useContext, useEffect, useState } from "react";
+import { createCustomerService, forgotPasswordService, getCustomerService, meService, passwordResetService, sendVerifyEmailService, updateCustomerService, updatePasswordService, verifyEmailService } from "@user/service/userService";
+import useModal from "@/hooks/useModal";
+import Loading from "@/components/Loading";
+import useAuthEffect from "@/hooks/useAuthEffect";
+import { useAuth } from "@/modules/auth/context/AuthContext";
 
 
 const userContext = createContext();
 
 export const UserProvider = ({ children }) => {
 
-    
+    const { isOpen, open, close } = useModal();
+
+    const { setUser } = useAuth();
+
     const me = async () => { 
-        return  await meService();
+        const response =  await meService();
+
+
+        return response;
+    }
+
+    const createCustomer = async (data) => {
+        try {
+            const response = await createCustomerService(data);
+
+            return response;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    const updateCustomer = async (data) => {
+        try {
+            const response = await updateCustomerService(data);
+
+            setUser(response.user);
+            sessionStorage.setItem(JSON.stringify(response?.user))
+
+            return response;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    const getCustomer = async () => {
+        try {
+            const response = await getCustomerService();
+
+            return response;
+        } catch (error) {
+            throw error;
+        }
     }
 
     const updatePassword = async (passwords) => {
         const response  = await updatePasswordService(passwords);
+
+        return response;
     }
 
     const forgotPassword = async (data) => {
         const response = await forgotPasswordService(data);
-
-        // PENDIENTE
+        return response;
 
     }
 
     const passwordReset = async (data) => {
         const response = await passwordResetService(data);
-        console.log("response contex", response)
 
         return response;
     }
@@ -32,6 +75,7 @@ export const UserProvider = ({ children }) => {
 
     const sendVerifyEmail = async () => {
         const response = await sendVerifyEmailService();
+        return response;
     }
 
     const verifyEmail = async (url) => {
@@ -46,6 +90,9 @@ export const UserProvider = ({ children }) => {
         passwordReset,
         sendVerifyEmail,
         verifyEmail,
+        updateCustomer,
+        getCustomer,
+        createCustomer
     }
 
     return(

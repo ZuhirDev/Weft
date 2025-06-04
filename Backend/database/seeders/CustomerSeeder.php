@@ -15,55 +15,35 @@ class CustomerSeeder extends Seeder
     public function run(): void
     {
 
-        // User::where('type', 'customer')->get()->each(function ($user){
-        //     Customer::create([
-        //         'user_id'=> $user->id,
-        //         'name'=> 'John',
-        //         'last_name'=> 'Cena',
-        //         'date_of_birth'=> '1977-04-23',
-        //         'gender'=> 'male',
-        //         'DNI'=> '49019442W',
-        //         'phone'=> '+12812363495',
-        //         'address'=> '123 Main St',
-        //         'occupation'=> 'actor',
-        //         'avatar'=> null,
-        //     ]);
-        //     // Customer::factory()->create([
-        //     //     'user_id'=> $user->id,               
-        //     // ]);
-        // });
+        $carlos = User::where('email', 'carlos@carlos.es')->first();
+        $laura = User::where('email', 'laura@laura.es')->first();
 
-        $john = User::where('email', 'john@cena.es')->first();
-
-        if ($john) {
+        if ($carlos) {
             Customer::create([
-                'user_id' => $john->id,
-                'name' => 'John',
-                'last_name' => 'Cena',
-                'date_of_birth' => '1977-04-23',
+                'user_id' => $carlos->id,
+                'name' => 'Carlos',
+                'last_name' => 'Sánchez',
+                'date_of_birth' => '1990-05-15',
                 'gender' => 'male',
-                'DNI' => '49019442W',
-                'phone' => '+12812363495',
-                'address' => '123 Main St',
-                'occupation' => 'actor',
+                'dni' => '12345678A',
+                'phone' => '612345678',
+                'address' => 'Calle Falsa 123, Madrid',
+                'occupation' => 'Ingeniero',
                 'avatar' => null,
             ]);
         }
 
-        
-        $randy = User::where('email', 'randy@orton.es')->first();
-
-        if ($randy) {
+        if ($laura) {
             Customer::create([
-                'user_id' => $randy->id,
-                'name' => 'Randy',
-                'last_name' => 'Orton',
-                'date_of_birth' => '1980-04-01',
-                'gender' => 'male',
-                'DNI' => '44556677Y',
-                'phone' => '+34611223344',
-                'address' => 'Calle Wrestling 8',
-                'occupation' => 'wrestler',
+                'user_id' => $laura->id,
+                'name' => 'Laura',
+                'last_name' => 'Martínez',
+                'date_of_birth' => '1992-03-22',
+                'gender' => 'female',
+                'dni' => '87654321B',
+                'phone' => '634567890',
+                'address' => 'Avenida de la Paz 45, Valencia',
+                'occupation' => 'Diseñadora gráfica',
                 'avatar' => null,
             ]);
         }

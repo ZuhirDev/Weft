@@ -20,10 +20,11 @@ class TransactionFactory extends Factory
     public function definition(): array
     {
         return [
-            'origin_account_id' => Account::factory(),
-            'destination_account_id' => $this->faker->bankAccountNumber,
+            'origin_account_id' => null,
+            'destination_account_id' => null,
+            'external_destination_iban' => $this->faker->iban('ES'),
             'card_id' => Card::factory(),
-            'transaction_id' => Str::uuid()->toString(),
+            'reference' => Str::uuid()->toString(),
             'amount' => $this->faker->randomFloat(2, 1, 1000),
             'status' => $this->faker->randomElement(['pending', 'completed', 'failed']),
             'concept' => $this->faker->sentence(),

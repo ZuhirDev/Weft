@@ -1,7 +1,7 @@
 import React from 'react';
 import { Input } from '@/components/ui/input';
 
-const FormInput = ({name, type, placeholder, register, disabled, error, hidden, value}) => {
+const FormInput = ({name, type, placeholder, register, disabled, error, hidden, value, defaultValue, className }) => {
   return (
     <div>
         <Input 
@@ -11,7 +11,8 @@ const FormInput = ({name, type, placeholder, register, disabled, error, hidden, 
         disabled={disabled}
         hidden={hidden}
         value={value}
-        className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 ${
+        defaultValue={defaultValue}
+        className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 ${className} ${
             error
             ? 'border-red-500 focus:ring-red-500'
             : 'border-gray-300 focus:ring-primary'

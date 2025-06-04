@@ -16,7 +16,7 @@ class Customer extends Model
         'last_name',
         'date_of_birth',
         'gender',
-        'DNI',
+        'dni',
         'phone',
         'address',
         'occupation',
@@ -29,11 +29,18 @@ class Customer extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
-    public function account()
+    public function accounts()
     {
-        return $this->hasMany(Account::class);
+        return $this->belongsToMany(Account::class, 'account_customer')
+                    ->withPivot('role')
+                    ->withTimestamps();
+    }
+
+    public function getFullName()
+    {
+        return "{$this->name} {$this->last_name}";
     }
 }

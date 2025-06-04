@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\UpdatePasswordRequest;
 use App\Http\Requests\Auth\ForgotPasswordRequest;
 use App\Http\Requests\Auth\ResetPasswordRequest;
+use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -20,7 +21,9 @@ class PasswordResetController extends Controller
      */
     public function updatePassword(UpdatePasswordRequest $request)
     {
-        $user = JWTAuth::user();
+        $user = User::UserInfo()
+                      ->where('users.id', JWTAuth::user()->id)
+                      ->first();
 
         if(!Hash::check($request->current_password, $user->password)){
             return response()->json([

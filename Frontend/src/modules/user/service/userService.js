@@ -1,10 +1,10 @@
-import { get, post } from '@/utils/xhr';
+import { get, post, put } from '@/utils/xhr';
 
 
 export const meService = async () => {
     try {
         const response = await get({url: '/me'});
-        console.log("service", response);
+
         return response.data;
     } catch (error) {
         throw error;
@@ -24,7 +24,6 @@ export const updatePasswordService = async (passwords) => {
             }
         });
 
-        console.log("response en service", response)
         return response.data;
     } catch (error) {
         throw error;
@@ -74,10 +73,69 @@ export const sendVerifyEmailService = async () => {
     }
 }
 
-export const verifyEmailService = async (url) => { console.log(url)
+export const verifyEmailService = async (url) => {
     try {
         const response = await get({
             url: url
+        });
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}
+
+export const getCustomerService = async () => {
+    try {
+        const response = await get({ url: '/customer' });
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}
+
+export const createCustomerService = async (data) => {
+    const { email, password, password_confirmation, name, last_name, dni, date_of_birth, gender, phone, address, occupation, avatar } = data;
+    try {
+        const response = await post({
+            url: 'customer/create',
+            data: {
+                email,
+                password, 
+                password_confirmation,
+                name,
+                last_name,
+                dni, 
+                date_of_birth,
+                gender,
+                phone,
+                address,
+                occupation,
+                avatar,
+            }
+        });
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}
+
+export const updateCustomerService = async (data) => {
+    const { email, name, last_name, dni, date_of_birth, gender, phone, address, occupation, avatar } = data;
+    try {
+        const response = await put({
+            url: 'customer/update',
+            data: {
+                email,
+                name,
+                last_name,
+                dni, 
+                date_of_birth,
+                gender,
+                phone,
+                address,
+                occupation,
+                avatar,
+            }
         });
         return response.data;
     } catch (error) {

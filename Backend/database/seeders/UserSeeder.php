@@ -20,25 +20,25 @@ class UserSeeder extends Seeder
             'status'=> 'active',
             'google2fa_secret'=> null,
             'google2fa_enabled'=> false,
-            'password'=> Hash::make('659735061'),
+            'password'=> Hash::make('11111111'),
             'type'=> 'employee',
         ]);
 
         User::create([
-            'email'=> 'john@cena.es',
+            'email'=> 'carlos@carlos.es',
             'status'=> 'active',
             'google2fa_secret'=> null,
             'google2fa_enabled'=> false,
-            'password'=> Hash::make('659735061'),
+            'password'=> Hash::make('11111111'),
             'type'=> 'customer',
         ]);
 
         User::create([
-            'email'=> 'randy@orton.es',
+            'email'=> 'laura@laura.es',
             'status'=> 'active',
             'google2fa_secret'=> null,
             'google2fa_enabled'=> false,
-            'password'=> Hash::make('659735061'),
+            'password'=> Hash::make('11111111'),
             'type'=> 'customer',
         ]);
     }

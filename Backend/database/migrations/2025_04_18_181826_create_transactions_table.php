@@ -13,14 +13,17 @@ return new class extends Migration
     {
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
-            $table->string('origin_account_id')->nullable()->constrained('accounts')->onDelete('cascade');
-            $table->string('destination_account_id')->nullable()->constrained('accounts')->onDelete('cascade');
+            $table->foreignId('origin_account_id')->nullable()->constrained('accounts')->onDelete('cascade');
+            $table->foreignId('destination_account_id')->nullable()->constrained('accounts')->onDelete('cascade');
+            $table->string('external_destination_iban')->nullable();
             $table->foreignId('card_id')->nullable()->constrained('cards')->onDelete('cascade');
 
-            $table->string('transaction_id')->unique();
+            $table->string('reference')->unique();
             $table->decimal('amount', 15, 2)->default(0.00);
             $table->enum('status', ['pending', 'completed', 'failed'])->default('pending');
+            $table->enum('type', ['deposit', 'withdrawal', 'transfer', 'fee', 'card_payment'])->default('transfer');
             $table->string('concept')->nullable();
+            $table->string('category')->nullable();
 
             $table->timestamps();
             $table->softDeletes();

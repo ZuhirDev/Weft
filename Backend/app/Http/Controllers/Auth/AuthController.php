@@ -5,14 +5,25 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
+use App\Models\Customer;
 use App\Models\User;
+use App\Services\UserService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\Facades\JWTAuth;
-// use Illuminate\Http\Request;
 
 class AuthController extends Controller
 {
+
+    protected $userService;
+
+    public function __construct(UserService $userService)
+    {
+        $this->userService = $userService;
+    }
+
+
     /**
      * Registers a new user with email and password.
      * Returns the created user data in the response.
@@ -22,14 +33,10 @@ class AuthController extends Controller
      */
     public function register(RegisterRequest $request) 
     {
-        $user = User::create([
-            "email" => $request->email,
-            "password" => Hash::make($request->password),
-        ]);
+        $user = $this->userService->createUser($request->validated());
 
         return response()->json([
-            "status" => true,
-            "message" =>  __('auth.registration_successful', ['name' => $user->email]), /// PONER EL NOMBRE
+            "message" =>  __('auth.registration_successful', ['name' => $user->email]),
             "data" => $user,
         ], 201);
     }
@@ -53,7 +60,9 @@ class AuthController extends Controller
             ], 401);
         }
 
-        $user = JWTAuth::user();
+        $user = User::UserInfo()
+                ->where('users.id', JWTAuth::user()->id)
+                ->first();
 
         if($user->google2fa_secret){
             return response()->json([
@@ -65,7 +74,7 @@ class AuthController extends Controller
         }
 
         return response()->json([
-            "message" => __('auth.login_successful', ['name' => $user->email]), /// PONER EL NOMBRE
+            "message" => __('auth.login_successful', ['name' => $user->name]), 
             "user" => $user,
             "token" => $token,
         ], 200);
@@ -97,11 +106,31 @@ class AuthController extends Controller
      */
     public function me()
     {
-        $user = JWTAuth::user();
+        $user = User::UserInfo()
+                      ->where('users.id', JWTAuth::user()->id)
+                      ->first();
 
         return response()->json([
             "message" => __('auth.user_info_retrieved'),
             "user" => $user,
         ], 200);
+    }
+
+    public function validatePassword(Request $request)
+    {
+        $user = User::UserInfo()
+                      ->where('users.id', JWTAuth::user()->id)
+                      ->first();
+
+        if(!Hash::check($request->password, $user->password)){
+            return response()->json([
+                'message' => 'Contraseña incorrecta',
+            ], 401);
+        }
+        
+        return response()->json([
+            'message' => 'Contraseña válida',
+        ], 200);
+
     }
 }

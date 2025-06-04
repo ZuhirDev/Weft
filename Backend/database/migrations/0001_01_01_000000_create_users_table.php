@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
-            $table->enum('status', ['active', 'suspended', 'pending'])->default('pending');
+            $table->enum('status', ['active', 'suspended', 'pending'])->default('active');
             $table->string('google2fa_secret', 32)->nullable();
             $table->boolean('google2fa_enabled')->default(false);
             $table->string('password');

@@ -13,12 +13,14 @@ return new class extends Migration
     {
         Schema::create('accounts', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('customer_id')->constrained()->onDelete('cascade');
 
-            $table->string('IBAN', 32)->unique();
+            $table->string('alias');
+            $table->string('iban', 32)->unique();
             $table->decimal('balance', 15, 2)->default(0.00);
             $table->string('swift', 11);
             $table->enum('status', ['active', 'blocked', 'closed'])->default('active');
+            $table->enum('type', ['checking', 'savings', 'investment'])->default('checking');
+            $table->date('open_date')->default(now());
 
             $table->timestamps();
             $table->softDeletes();

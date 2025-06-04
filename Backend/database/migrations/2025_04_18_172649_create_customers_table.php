@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('last_name', 100);
             $table->date('date_of_birth');
             $table->enum('gender', ['male', 'female', 'unspecified'])->default('unspecified');
-            $table->string('DNI', 9)->unique();
+            $table->string('dni', 9)->unique();
             $table->string('phone', 15);
             $table->string('address', 100);
             $table->string('occupation', 100)->nullable();

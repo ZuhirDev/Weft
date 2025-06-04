@@ -1,4 +1,5 @@
 const USER_ROUTES = {
+    USER: '/user',
     ME: '/me',
     UPDATE_PASSWORD: '/update-password',
     FORGOT_PASSWORD: '/forgot-password',
