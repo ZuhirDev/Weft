@@ -28,8 +28,6 @@ services:
       context: ${REACT}
       dockerfile: Dockerfile
     container_name: ${CONTAINER_NAME_REACT}
-    volumes:
-      - ${REACT}/:/app
     depends_on:
       - backend
     networks:
@@ -46,6 +44,19 @@ services:
     depends_on:
       - backend
       - frontend 
+      # - reverb
+    networks:
+      - weft-network
+  npm:
+    image: 'docker.io/jc21/nginx-proxy-manager:latest'
+    restart: unless-stopped
+    ports:
+      - '80:80'
+      - '81:81'
+      - '443:443'
+    volumes:
+      - ./data:/data
+      - ./letsencrypt:/etc/letsencrypt
     networks:
       - weft-network
   db:

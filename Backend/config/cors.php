@@ -19,7 +19,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['http://localhost:5173', 'http://localhost:80', 'http://weft.atisoluciones.es/', 'https://weft.atisoluciones.es/'],
+    'allowed_origins' => ['http://localhost:5173', 'http://localhost:80', 'http://weft.atisoluciones.es', 'https://weft.atisoluciones.es'],
 
     'allowed_origins_patterns' => [],
 
