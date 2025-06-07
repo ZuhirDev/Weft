@@ -26,7 +26,7 @@ const UserSecurity = () => {
               <CheckCircle className="w-5 h-5 mr-2 text-green-600" />
               <AlertTitle>Your email is verified</AlertTitle>
               <AlertDescription>
-                You will receive important updates at <strong>{user.email}</strong>.
+                You will receive important updates at <strong>{user.email}</strong>
               </AlertDescription>
             </Alert>
           ) : (
