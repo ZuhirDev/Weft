@@ -40,6 +40,8 @@ La base de datos está diseñada para reflejar de forma clara y escalable la rel
 - **`cards`**: Tarjetas asociadas a las cuentas. Contiene datos como número, fecha de caducidad, etc.
 - **`transactions`**: Historial de movimientos financieros, incluyendo ingresos, retiros y transferencias internas y externas.
 
+![Diagrama de base de datos](Frontend/src/assets/img/Diagrama-BD.png)
+
 ---
 
 ## 🧱 Arquitectura del Proyecto
@@ -52,13 +54,27 @@ Cada módulo cumple un rol específico y está separado por capas: controladores
 
 ---
 
+## 🚀 Despliegue
+
+La aplicación está desplegada con la siguiente configuración:
+
+- El frontend (React) y el backend (Laravel) están servidos a través de un servidor **NGINX** que actúa como proxy interno, gestionando el enrutamiento de peticiones entre ambos.
+- La base de datos MySQL está alojada en Amazon **RDS**, garantizando disponibilidad y escalabilidad.
+- Por encima de esta capa, se encuentra **NGINX Proxy Manager** (NPM), que se encarga de gestionar los certificados SSL mediante Let's Encrypt y actúa como proxy inverso externo.
+- NPM recibe las peticiones HTTPS y las redirige al servidor NGINX interno, que a su vez sirve el frontend y backend.
+- Esta configuración permite separar la gestión de SSL y dominios (en NPM) de la lógica de aplicación y servidor web (en NGINX).
+
+---
+
 ## 🛠️ Tecnologías Usadas
 
 - **Frontend**: React + TailwindCSS  
 - **Backend**: Laravel  
 - **Realtime**: Laravel Reverb (WebSockets)  
 - **Base de datos**: MySQL  
-- **Servidor**: NGINX  
+- **Servidor**: NGINX
+- **Proxy inverso y SSL**: NGINX Proxy Manager (NPM)  
+- **Infraestructura en la nube**: AWS (EC2 y RDS)
 
 ---
 
