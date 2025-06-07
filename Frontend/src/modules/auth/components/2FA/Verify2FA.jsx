@@ -9,11 +9,13 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@auth/context/AuthContext';
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog"
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
 
 const Verify2FA = () => {
 
   const { t } = useTranslation();
+  const navigate = useNavigate()
   const FormSchema = z.object({
     otp: z.string().min(6,t('validation:otp.min', { min: 6 })).max(6, t('validation:otp.max', { max: 6 })),
   });
@@ -42,6 +44,11 @@ const Verify2FA = () => {
           message: generalMessage,
         });
       }      
+
+      setTimeout(() => {
+        navigate('/login');
+      }, 3000);
+    
     }
   }
 

@@ -1,8 +1,7 @@
 <?php
 
-use App\Events\NotifyEvent;
-use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Broadcasting\BroadcastController;
 
 Route::get('/', function(){
     return response()->json(["message" => "Estas en la ruta '/' de api.php"]);
@@ -12,15 +11,7 @@ Route::get('languages', function(){
     return response()->json(config('languages'));
 });
 
-Broadcast::routes(['middleware' => ['auth:api']]);
-
-
-Route::get('notify',function(){
-    event(new NotifyEvent('Alguien ha pulsado el boton'));
-
-    return response()->json(['status' => 'Notification sent']); 
-} );
-
+Route::post('/broadcasting/auth', [BroadcastController::class, 'authenticate'])->middleware('auth:api');
 
 
 

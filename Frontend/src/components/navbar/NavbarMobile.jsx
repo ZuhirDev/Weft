@@ -7,10 +7,13 @@ import UserMenu from '@/modules/user/components/UserMenu';
 import VisibilityWrapper from '@/components/VisibilityWrapper';
 import { ModeToggle } from '@/components/mode-toggle';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
-import NavItems from '@/config/navigation';
+import { useTranslation } from 'react-i18next';
+import getNavItems from '@/config/navigation';
 
 const NavbarMobile = () => {
   const { isOpen, open, close } = useModal();
+  const { t } = useTranslation();
+  const NavItems =  getNavItems(t);
 
   return (
     <Sheet open={isOpen} onOpenChange={value => (value ? open() : close())}>
@@ -32,7 +35,7 @@ const NavbarMobile = () => {
         <nav className="flex flex-col space-y-4">
           {NavItems.map(item => (
             <NavLink
-              key={item.title}
+              key={item.key}
               to={item.url}
               onClick={close}
               className={({ isActive }) =>

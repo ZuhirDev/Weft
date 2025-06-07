@@ -1,15 +1,18 @@
 import React from 'react';
-import NavItems from '@/config/navigation';
 import { NavLink, useLocation } from 'react-router-dom';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import UserMenu from '@/modules/user/components/UserMenu';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { ModeToggle } from '@/components/mode-toggle';
 import VisibilityWrapper from '@/components/VisibilityWrapper';
+import { useTranslation } from 'react-i18next';
+import getNavItems from '@/config/navigation';
 
 const NavbarDesktop = () => {
   const location = useLocation();
-  const currentTab = NavItems.find(item => item.url === location.pathname)?.title.toLowerCase();
+  const { t } = useTranslation();
+  const NavItems =  getNavItems(t);
+  const currentTab = NavItems.find(item => item.url === location.pathname)?.key.toLowerCase();
 
   return (
     <div className="w-full py-4">
@@ -19,14 +22,14 @@ const NavbarDesktop = () => {
             <TabsList className="inline-flex space-x-6">
               {NavItems.map(item => (
                 <TabsTrigger
-                  key={item.title}
-                  value={item.title.toLowerCase()}
+                  key={item.key}
+                  value={item.key.toLowerCase()}
                   asChild
                   className="px-4 py-2"
                 >
                   <NavLink to={item.url} className="flex items-center gap-2">
                     <item.icon className="h-4 w-4" />
-                    <span>{item.title}</span>
+                    <span>{item.title} </span>
                   </NavLink>
                 </TabsTrigger>
               ))}

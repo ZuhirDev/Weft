@@ -2,24 +2,24 @@ import esFlag from '@/assets/flags/es.svg';
 import enFlag from '@/assets/flags/gb.svg';
 
 import enValidation from './locales/en/validation.json';
-import enCommon from './locales/en/en.json';
 import enAuth from './locales/en/auth.json';
+import enNavbar from './locales/en/navbar.json';
 
 import esValidation from './locales/es/validation.json';
-import esCommon from './locales/es/es.json';
 import esAuth from './locales/es/auth.json';
+import esNavbar from './locales/es/navbar.json';
 
 export const resources = {
   en: { 
     validation: enValidation, 
-    common: enCommon,
-    auth: enAuth, 
+    auth: enAuth,
+    navbar: enNavbar,
   },
 
   es: { 
     validation: esValidation, 
-    common: esCommon,
     auth: esAuth,
+    navbar: esNavbar,
   },
 };
 

@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { disable2FAService, enable2FAService, loginService, logoutService, passwordVerificationService, registerService, verify2FAService } from "@auth/services/authService";
 import { meService, updateCustomerService } from "@/modules/user/service/userService";
+import socketService from "@/lib/socketService";
 
 const AuthContext = createContext();
  
@@ -15,9 +16,7 @@ export const AuthProvider = ({ children }) => {
     const updateCustomer = async (data) => {
         try {
             const response = await updateCustomerService(data);
-
-            setUser(response.user);
-            sessionStorage.setItem('user', JSON.stringify(response?.user));
+            await refreshUser();
 
             return response;
         } catch (error) {
@@ -29,10 +28,12 @@ export const AuthProvider = ({ children }) => {
         const storedUser = sessionStorage.getItem('user');
         const needs2FAStored  = sessionStorage.getItem('needs_2fa') === 'true';
 
-        if(sessionStorage.getItem('token') && storedUser) setUser(JSON.parse(storedUser));
-        
-        setLoading(false);
+        if(sessionStorage.getItem('token') && storedUser){
+            setUser(JSON.parse(storedUser));
+            socketService.init(sessionStorage.getItem('token'));
+        } 
 
+        setLoading(false);
         setNeeds2FA(needs2FAStored);
     }, []);
 
@@ -67,6 +68,7 @@ export const AuthProvider = ({ children }) => {
             sessionStorage.setItem('user', JSON.stringify(response.user));
             sessionStorage.setItem('token', response.token);
             setUser(response.user);
+            socketService.init(response.token);
 
             return response;
         } catch (error) {
@@ -85,6 +87,7 @@ export const AuthProvider = ({ children }) => {
             sessionStorage.removeItem('token');
             sessionStorage.removeItem('needs_2fa');
             setUser(null);
+            socketService.disconnect();
         }
     }
 
@@ -102,9 +105,12 @@ export const AuthProvider = ({ children }) => {
     const verify2FA = async (otp) => {
         const response = await verify2FAService(otp);
 
+        console.log(response)
+
         sessionStorage.setItem('needs_2fa', 'false');
         sessionStorage.setItem('user', JSON.stringify(response.user));
         sessionStorage.setItem('token', response.token);
+        socketService.init(response.token);
         setNeeds2FA(false);
         setUser(response.user);
 
@@ -114,8 +120,10 @@ export const AuthProvider = ({ children }) => {
     const disable2FA = async () => {
         try {
             const response = await disable2FAService();
+            await refreshUser();
             sessionStorage.removeItem('needs_2fa');
-            setNeeds2FA(false);         
+            setNeeds2FA(false);
+            return response; 
         } catch (error) {
             throw error;
         }
@@ -130,6 +138,21 @@ export const AuthProvider = ({ children }) => {
             throw error;
         }
     }
+
+    const refreshUser = async () => {
+        try {
+            const response = await meService();
+            const updatedUser = response.user;
+
+            setUser(updatedUser);
+            sessionStorage.setItem('user', JSON.stringify(updatedUser));
+
+            return updatedUser;
+        } catch (error) {
+            throw error;
+        }
+    };
+
 
     const value = {
         registerUser,
