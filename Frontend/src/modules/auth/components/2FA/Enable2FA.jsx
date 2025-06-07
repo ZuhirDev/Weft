@@ -49,7 +49,7 @@ const Enable2FA = () => {
     return (
         <>
 
-            <Button onClick={open} variant="outline">
+            <Button onClick={open}>
                 Enable 2FA                    
             </Button>
 

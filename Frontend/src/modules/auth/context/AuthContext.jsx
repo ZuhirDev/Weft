@@ -105,8 +105,6 @@ export const AuthProvider = ({ children }) => {
     const verify2FA = async (otp) => {
         const response = await verify2FAService(otp);
 
-        console.log(response)
-
         sessionStorage.setItem('needs_2fa', 'false');
         sessionStorage.setItem('user', JSON.stringify(response.user));
         sessionStorage.setItem('token', response.token);
