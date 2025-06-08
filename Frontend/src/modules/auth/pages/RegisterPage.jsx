@@ -11,10 +11,10 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useUser } from '@/modules/user/context/UserContext'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { format } from 'date-fns'
-import { DatePickerCustom } from '@/components/ui/DatePicker'
 import { Label } from '@/components/ui/label'
 import { ArrowLeft } from 'lucide-react'
 import AUTH_ROUTES from '@auth/routes/paths'
+import { DateInput } from '@/components/ui/DateInput'
 
 
 const RegisterPage = () => {
@@ -27,7 +27,7 @@ const RegisterPage = () => {
     name: z.string().optional(),
     last_name: z.string().max(100, t('validation:max_length', { max: 100 })).optional(),
     dni: z.string().optional(),
-    date_of_birth: z.date().nullable().optional(),
+    date_of_birth: z.string().nullable().optional(),
     gender: z.enum(['male', 'female', 'unspecified']).optional(),
     phone: z.string().max(15, t('validation:max_length', { max: 15 })).optional(),
     address: z.string().max(100, t('validation:max_length', { max: 100 })).optional(),
@@ -254,23 +254,13 @@ return (
                   />
                 </div>
 
-                <div className="grid gap-2">
-                  <Label htmlFor="date_of_birth" className="dark:text-white">Date of Birth</Label>
-                  <Controller
-                    control={control}
+                <div>
+                  <DateInput
+                    register={register}
                     name="date_of_birth"
-                    render={({ field }) => (
-                      <DatePickerCustom
-                        message="Select your date of birth"
-                        selectedDate={field.value}
-                        setSelectedDate={field.onChange}
-                        className="rounded-lg bg-muted/50 dark:bg-muted-dark/50"
-                      />
-                    )}
+                    label="Select your date of birth"
+                    error={errors.date_of_birth}
                   />
-                  {errors.date_of_birth && (
-                    <p className="text-sm text-red-500 mt-1">{errors.date_of_birth.message}</p>
-                  )}
                 </div>
 
                 <div className="grid gap-2">

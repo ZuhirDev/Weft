@@ -1,0 +1,18 @@
+{
+    "title": "Financial Recommendations",
+    "seeMore": "See more recommendations",
+    "tips": {
+      "emergencyFund": {
+        "title": "Build an Emergency Fund",
+        "description": "Saving 3 to 6 months of your regular expenses will help you face unexpected events without stress."
+      },
+      "reviewExpenses": {
+        "title": "Review Your Monthly Expenses",
+        "description": "Analyze your spending to identify payments you can reduce or eliminate, optimizing your budget."
+      },
+      "planGoals": {
+        "title": "Plan Your Financial Goals",
+        "description": "Setting clear goals helps you organize your savings better and achieve your financial priorities."
+      }
+    }    
+}

@@ -7,11 +7,11 @@ import { Link } from 'react-router-dom';
 import MAIN_ROUTES from '@/routes/path';
 
 const Navbar = () => {
-  const isMobile = useScreenType();
+  const isMobile = useScreenType(1100);
 
   return (
     <div className="w-full py-4">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-8 rounded-xl border bg-background py-3 shadow-sm">
+      <div className="mx-auto max-w-7xl rounded-xl border bg-background py-3 shadow-sm px-4 sm:px-6 md:px-8">
         <div className="flex items-center justify-between">
 
           <Link to={MAIN_ROUTES.DASHBOARD} className="flex items-center gap-3">

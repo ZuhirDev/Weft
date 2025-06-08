@@ -1,0 +1,11 @@
+{ 
+    "title": "Transacciones",
+    "description": "Tu actividad más reciente",
+    "viewMore": "Ver más transacciones",
+    "transactionTypes": {
+      "deposit": "Ingreso",
+      "transfer": "Transferencia",
+      "withdrawal": "Retiro",
+      "card": "Tarjeta"
+    }    
+}

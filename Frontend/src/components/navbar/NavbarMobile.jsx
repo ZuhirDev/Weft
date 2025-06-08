@@ -27,7 +27,7 @@ const NavbarMobile = () => {
         </button>
       </SheetTrigger>
 
-      <SheetContent side="right" className="w-72 p-6">
+      <SheetContent side="right" className="w-72 p-6 sm:px-8">
         <SheetHeader>
           <SheetTitle>Menu</SheetTitle>
         </SheetHeader>
