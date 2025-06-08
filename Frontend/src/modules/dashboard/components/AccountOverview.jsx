@@ -5,10 +5,12 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useAccount } from '@/modules/account/context/AccountContext';
 import { useCard } from '@/modules/card/context/CardContext';
 import VisibilityWrapper from '@/components/VisibilityWrapper';
+import { useTranslation } from 'react-i18next';
 
 const AccountOverview = () => {
   const { accounts } = useAccount();
   const { cards } = useCard();
+  const { t } = useTranslation();
 
   const totalBalance = accounts.reduce((acc, account) => acc + account.balance, 0);
 
@@ -22,7 +24,7 @@ const AccountOverview = () => {
             <CardHeader className="flex items-center gap-3">
               <Wallet className="h-6 w-6 text-green-600" />
               <div>
-                <CardDescription>Total Balance</CardDescription>
+                <CardDescription>{t('account:accountOverview.totalBalance')}</CardDescription>
                 <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
                 <VisibilityWrapper>
                   {totalBalance.toLocaleString('es-ES', {
@@ -40,7 +42,7 @@ const AccountOverview = () => {
             <CardHeader className="flex items-center gap-3">
               <Users className="h-6 w-6 text-blue-600" />
               <div>
-                <CardDescription>Number of Accounts</CardDescription>
+                <CardDescription>{t('account:accountOverview.numberOfAccounts')}</CardDescription>
                 <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
                   {accounts.length}
                 </CardTitle>
@@ -52,7 +54,7 @@ const AccountOverview = () => {
             <CardHeader className="flex items-center gap-3">
               <CreditCard className="h-6 w-6 text-purple-600" />
               <div>
-                <CardDescription>Number of Cards</CardDescription>
+                <CardDescription>{t('account:accountOverview.numberOfCards')}</CardDescription>
                 <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
                   {cards.length}
                 </CardTitle>

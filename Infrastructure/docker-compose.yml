@@ -45,7 +45,8 @@ services:
       - ${REACT}/dist:/var/www/frontend/dist
     depends_on:
       - backend
-      - frontend 
+      - frontend
+      - reverb
     networks:
       - weft-network
   db:

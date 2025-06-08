@@ -6,6 +6,7 @@ import { ChartContainer, ChartTooltip } from "@/components/ui/chart"
 import { useAccount } from "@account/context/AccountContext"
 import { Skeleton } from "@/components/ui/skeleton"
 import useAuthEffect from "@/hooks/useAuthEffect"
+import { useTranslation } from "react-i18next"
 
 const chartConfig = {
   balance: {
@@ -48,8 +49,9 @@ function CustomTooltip({ active, payload }) {
 }
 
 export function AccountChart() {
-  const { accountChart, selectedAccount } = useAccount()
-  const [accountHistory, setAccountHistory] = useState(null)
+  const { accountChart, selectedAccount } = useAccount();
+  const [accountHistory, setAccountHistory] = useState(null);
+  const { t } = useTranslation();
 
   useAuthEffect(() => {
     if (!selectedAccount?.id) return
@@ -74,9 +76,9 @@ export function AccountChart() {
         <Card className="relative z-10 border-0 overflow-hidden bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 text-sm shadow-sm w-full rounded-2xl">
           <CardHeader className="pb-1">
             <CardTitle className="text-gray-900 dark:text-white text-base sm:text-lg">
-              Account Balance
+              {t('account:accountChart.title')}
             </CardTitle>
-            <CardDescription className="text-sm">Last 30 Days</CardDescription>
+            <CardDescription className="text-sm">{t('account:accountChart.subtitle')}</CardDescription>
           </CardHeader>
 
           <CardContent className="py-2">
@@ -111,10 +113,7 @@ export function AccountChart() {
 
           <CardFooter className="flex flex-col items-start gap-2 text-sm px-4 pb-4">
             <div className="flex items-center gap-2 font-medium leading-none text-gray-900 dark:text-white">
-              Trending up by 5.2% in the last 30 days <TrendingUp className="h-4 w-4" />
-            </div>
-            <div className="text-muted-foreground leading-none">
-              Balance trend over the past 30 days
+              {t('account:accountChart.trendUp')} <TrendingUp className="h-4 w-4" />
             </div>
           </CardFooter>
         </Card>

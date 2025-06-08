@@ -3,14 +3,16 @@ import { AccountChart } from '../components/AccountChart';
 import FinancialTips from '../components/FinancialTips';
 import AccountOverview from '../components/AccountOverview';
 import { useAuth } from '@/modules/auth/context/AuthContext';
+import { useTranslation } from 'react-i18next';
 
 const HomePage = () => {
   const { user } = useAuth();
+  const { t } = useTranslation();
 
   return (
     <div className="w-full max-w-7xl mx-auto px-0 sm:px-6 lg:px-8 py-6 space-y-10">
       <h1 className="text-2xl sm:text-3xl font-extrabold text-zinc-900 dark:text-zinc-200 mb-4">
-        Welcome back, {user.name}
+        {t('user:welcomeBack', { name: user.name })}
       </h1>
 
       <section className="space-y-6">

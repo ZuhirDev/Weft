@@ -1,0 +1,13 @@
+{
+  "accountOverview": {
+    "totalBalance": "Total Balance",
+    "numberOfAccounts": "Number of Accounts",
+    "numberOfCards": "Number of Cards"
+  },
+
+  "accountChart": {
+    "title": "Account Balance",
+    "subtitle": "Last 30 Days",
+    "trendUp": "Trending up by 5.2% in the last 30 days"
+  }
+}

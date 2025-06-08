@@ -20,7 +20,7 @@ return [
     'password.string' => 'The password must be a valid string.',
     'password.min' => 'The password must be at least 8 characters long.',
     'password.confirmed' => 'The password confirmation does not match.',
-    'password.different' => 'The new password cannot be the same as the current password. mamañema',
+    'password.different' => 'The new password cannot be the same as the current password.',
     'token.required' => 'The token is required.',
     'token.string' => 'The token must be a valid string.',
     'name.required' => 'The name field is required.',

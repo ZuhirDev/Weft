@@ -29,8 +29,8 @@ const LoginPage = () => {
   const { handleSubmit, register, reset, setError, control, formState: { errors, isSubmitting } } = useForm({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: 'carlos@carlos.es',
-      password: '11111111',
+      email: '',
+      password: '',
     },
   });
 
@@ -58,7 +58,7 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background relative overflow-hidden">
+    <div className="flex min-h-screen items-center justify-center bg-background relative overflow-hidden px-4 sm:px-6 lg:px-8">
       <div className="absolute inset-0 -z-10 bg-[radial-gradient(45%_40%_at_50%_60%,hsl(var(--primary)/15%)_0,transparent_100%)]" />
       <div className="absolute -top-40 -left-40 h-80 w-80 rounded-full bg-primary/20 blur-3xl" />
       <div className="absolute -bottom-40 -right-40 h-80 w-80 rounded-full bg-primary/20 blur-3xl" />
@@ -73,78 +73,78 @@ const LoginPage = () => {
               <ArrowLeft className="h-4 w-4" />
               Back to Home
             </Link>
-          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-8 p-8 md:p-12">
-            <header className="flex flex-col items-center gap-2 text-center">
-              <h2 className="text-2xl font-bold tracking-tight">Sign in to your account</h2>
-              <p className="text-sm text-muted-foreground">Access your digital banking dashboard</p>
-            </header>
+            <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-8 p-8 md:p-12">
+              <header className="flex flex-col items-center gap-2 text-center">
+                <h2 className="text-2xl font-bold tracking-tight">Sign in to your account</h2>
+                <p className="text-sm text-muted-foreground">Access your digital banking dashboard</p>
+              </header>
 
-            <section className="space-y-6">
-              <div className="grid gap-3">
-                <Label htmlFor="email" className="text-sm font-medium">
-                  Email
-                </Label>
-                <FormInput
-                  name="email"
-                  type="email"
-                  register={register}
-                  disabled={isSubmitting}
-                  placeholder="Enter your email"
-                  error={errors.email}
-                  className="bg-muted/50"
-                />
-              </div>
-
-              <div className="grid gap-3">
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="password" className="text-sm font-medium">
-                    Password
+              <section className="space-y-6">
+                <div className="grid gap-3">
+                  <Label htmlFor="email" className="text-sm font-medium">
+                    Email
                   </Label>
-                  <Link
-                    to={USER_ROUTES.FORGOT_PASSWORD}
-                    className="text-sm text-primary hover:text-primary/90 transition-colors"
-                  >
-                    Forgot password?
-                  </Link>
+                  <FormInput
+                    name="email"
+                    type="email"
+                    register={register}
+                    disabled={isSubmitting}
+                    placeholder="Enter your email"
+                    error={errors.email}
+                    className="bg-muted/50"
+                  />
                 </div>
-                <Controller
-                  name="password"
-                  control={control}
-                  render={({ field }) => (
-                    <PasswordInput {...field} className="rounded-lg bg-muted/50" placeholder="Password" />
+
+                <div className="grid gap-3">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="password" className="text-sm font-medium">
+                      Password
+                    </Label>
+                    <Link
+                      to={USER_ROUTES.FORGOT_PASSWORD}
+                      className="text-sm text-primary hover:text-primary/90 transition-colors"
+                    >
+                      Forgot password?
+                    </Link>
+                  </div>
+                  <Controller
+                    name="password"
+                    control={control}
+                    render={({ field }) => (
+                      <PasswordInput {...field} className="rounded-lg bg-muted/50" placeholder="Password" />
+                    )}
+                  />
+                  {errors.password && (
+                    <p className="text-sm text-red-500 mt-1">{errors.password.message}</p>
                   )}
-                />
-                {errors.password && (
-                  <p className="text-sm text-red-500 mt-1">{errors.password.message}</p>
-                )}
-              </div>
-            </section>
+                </div>
+              </section>
 
-                {errors.root && (
-                  <p className="text-sm text-red-500 mt-1">{errors.root.message}</p>
-                )}
+              {errors.root && (
+                <p className="text-sm text-red-500 mt-1">{errors.root.message}</p>
+              )}
 
-            <section className="space-y-4">
-              <Button
-                disabled={isSubmitting}
-                type="submit"
-                className="w-full rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground py-6"
-                size="lg"
-              >
-                {isSubmitting ? 'Signing in...' : 'Sign in'}
-              </Button>
-
-              <p className="text-center text-sm text-muted-foreground">
-                Don’t have an account?{' '}
-                <Link
-                  to={AUTH_ROUTES.REGISTER}
-                  className="text-primary hover:text-primary/90 transition-colors"
+              <section className="space-y-4">
+                <Button
+                  disabled={isSubmitting}
+                  type="submit"
+                  className="w-full rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground py-6"
+                  size="lg"
                 >
-                  Create one
-                </Link>
-              </p>
-            </section>
-          </form>
+                  {isSubmitting ? 'Signing in...' : 'Sign in'}
+                </Button>
+
+                <p className="text-center text-sm text-muted-foreground">
+                  Don’t have an account?{' '}
+                  <Link
+                    to={AUTH_ROUTES.REGISTER}
+                    className="text-primary hover:text-primary/90 transition-colors"
+                  >
+                    Create one
+                  </Link>
+                </p>
+              </section>
+            </form>
           </div>
 
           <aside className="relative hidden md:block bg-muted max-w-sm md:max-w-lg rounded-xl overflow-hidden mr-8">

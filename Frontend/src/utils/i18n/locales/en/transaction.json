@@ -1,0 +1,12 @@
+{
+    "title": "Transactions",
+    "description": "Your latest account activity",
+    "viewMore": "View more transactions",
+    "transactionTypes": {
+      "deposit": "Deposit",
+      "transfer": "Transfer",
+      "withdrawal": "Withdrawal",
+      "card": "Card"
+    }   
+
+}

@@ -1,0 +1,18 @@
+{
+    "title": "Recomendaciones Financieras",
+    "seeMore": "Ver más recomendaciones",
+    "tips": {
+      "emergencyFund": {
+        "title": "Construye un Fondo de Emergencia",
+        "description": "Ahorrar de 3 a 6 meses de tus gastos habituales te ayudará a enfrentar imprevistos sin estrés."
+      },
+      "reviewExpenses": {
+        "title": "Revisa Tus Gastos Mensuales",
+        "description": "Analiza tus gastos para identificar pagos que puedes reducir o eliminar, optimizando tu presupuesto."
+      },
+      "planGoals": {
+        "title": "Planifica Tus Metas Financieras",
+        "description": "Establecer metas claras te ayuda a organizar mejor tus ahorros y lograr tus prioridades financieras."
+      }
+    }    
+}

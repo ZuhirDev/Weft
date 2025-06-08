@@ -7,9 +7,11 @@ import VisibilityWrapper from '@/components/VisibilityWrapper';
 import { Link } from 'react-router-dom';
 import TRANSACTION_ROUTES from '@/modules/transaction/routes/paths';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useTranslation } from 'react-i18next';
 
 const AccountRecentTrans = () => {
   const { selectedAccount } = useAccount();
+  const { t } = useTranslation();
 
   return (
     <>
@@ -20,10 +22,10 @@ const AccountRecentTrans = () => {
           <Card className="relative z-10 border-0 overflow-hidden bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 dark:bg-card/90 dark:backdrop-blur-md shadow-sm transition-shadow duration-300 hover:shadow-lg">
             <CardHeader className="relative z-10 border-b border-border/50 bg-gradient-to-r from-zinc-50 to-gray-50 dark:from-zinc-800 dark:to-zinc-900 px-4 py-2">
               <CardTitle className="text-lg font-semibold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent leading-tight">
-                Transactions
+                {t('transaction:title')}
               </CardTitle>
               <CardDescription className="mt-0.5 text-muted-foreground dark:text-muted-foreground/80 text-sm leading-tight">
-                Your latest account activity
+                {t('transaction:description')}
               </CardDescription>
             </CardHeader>
 
@@ -54,7 +56,7 @@ const AccountRecentTrans = () => {
                   <div className="flex-1 space-y-0.5">
                     <div className="flex items-center justify-between">
                       <p className="font-medium capitalize tracking-wide text-foreground dark:text-foreground text-sm">
-                        {transaction.type}
+                        {t(`transaction:transactionTypes.${transaction.type}`)}
                       </p>
                       <div
                         className={`font-semibold text-base transition duration-300 ${
@@ -96,7 +98,7 @@ const AccountRecentTrans = () => {
                   to={TRANSACTION_ROUTES.TRANSACTION}
                   className="inline-flex items-center text-primary hover:underline cursor-pointer transition text-sm"
                 >
-                  View more transactions
+                  {t('transaction:viewMore')}
                   <ArrowRight className="ml-1 h-4 w-4" />
                 </Link>
               </div>
