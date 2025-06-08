@@ -4,6 +4,7 @@ services:
       context: ${LARAVEL}
       dockerfile: Dockerfile
     container_name: ${CONTAINER_NAME_LARAVEL}
+    restart: unless-stopped
     volumes:
       - ${LARAVEL}/:/var/www/html
     depends_on:
@@ -15,6 +16,7 @@ services:
       context: ${LARAVEL}
       dockerfile: Dockerfile
     container_name: reverb
+    restart: unless-stopped
     working_dir: /var/www/html
     volumes:
       - ${LARAVEL}/:/var/www/html
@@ -28,8 +30,7 @@ services:
       context: ${REACT}
       dockerfile: Dockerfile
     container_name: ${CONTAINER_NAME_REACT}
-    volumes:
-      - ${REACT}/:/app
+    restart: unless-stopped
     depends_on:
       - backend
     networks:
@@ -37,6 +38,7 @@ services:
   nginx:
     image: nginx:alpine
     container_name: ${CONTAINER_NAME_NGINX}
+    restart: unless-stopped
     ports:
       - "${NGINX_PORT}:80"
     volumes:
@@ -45,13 +47,26 @@ services:
       - ${REACT}/dist:/var/www/frontend/dist
     depends_on:
       - backend
-      - frontend
+      - frontend 
       - reverb
+    networks:
+      - weft-network
+  npm:
+    image: 'docker.io/jc21/nginx-proxy-manager:latest'
+    restart: unless-stopped
+    ports:
+      - '80:80'
+      - '81:81'
+      - '443:443'
+    volumes:
+      - ./data:/data
+      - ./letsencrypt:/etc/letsencrypt
     networks:
       - weft-network
   db:
     image: mysql:8.0
     container_name: ${MYSQL_CONTAINER_NAME}
+    restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD} 
     volumes:
