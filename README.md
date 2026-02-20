@@ -94,4 +94,4 @@ You can use the following accounts to test the application:
 
 ---
 
-> ℹ️ *This project was developed for educational and learning purposes.
+> ℹ️ *This project was developed for educational and learning purposes.*
