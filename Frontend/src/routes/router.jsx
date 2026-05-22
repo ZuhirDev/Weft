@@ -9,9 +9,9 @@ import DashboardRouter from '@dashboard/routes/router'
 import transactionRouter from '@transaction/routes/router';
 import LandingPage from '@landing/pages/LandingPage';
 import MAIN_ROUTES from './path';
-import InvestmentPage from '@/modules/investment/pages/InvestmentPage';
 import PublicLayout from '@/layouts/PublicLayout';
 import ProtectedLayout from '@/layouts/ProtectedLayout';
+import BlockChain from '@blockchain/page/BlockChain';
 
 const router = createBrowserRouter([
 
@@ -44,7 +44,7 @@ const router = createBrowserRouter([
 
             {
                 path: MAIN_ROUTES.INVESTMENT,
-                element: <InvestmentPage />
+                element: <BlockChain />
             }
         ]
     },
