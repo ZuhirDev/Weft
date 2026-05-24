@@ -17,6 +17,7 @@ export default defineConfig({
       "@transaction": path.resolve(__dirname, "./src/modules/transaction"),
       "@dashboard": path.resolve(__dirname, "./src/modules/dashboard"),
       "@landing": path.resolve(__dirname, "./src/modules/landing"),
+      "@chatbot": path.resolve(__dirname, "./src/modules/chatbot"),
     },
   },
 });

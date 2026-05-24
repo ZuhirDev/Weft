@@ -4,5 +4,6 @@
   "cards": "Cards",
   "transactions": "Transactions",
   "investments": "Investments",
-  "menu": "Menu"
+  "menu": "Menu",
+  "assistant" : "Assistant"
 }

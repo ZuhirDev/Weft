@@ -7,6 +7,7 @@ import accountRouter from '@account/routes/router';
 import cardRouter from '@card/routes/router';
 import DashboardRouter from '@dashboard/routes/router'
 import transactionRouter from '@transaction/routes/router';
+import chatbotRouter from '@chatbot/routes/router';
 import LandingPage from '@landing/pages/LandingPage';
 import MAIN_ROUTES from './path';
 import InvestmentPage from '@/modules/investment/pages/InvestmentPage';
@@ -40,6 +41,7 @@ const router = createBrowserRouter([
             ...cardRouter,
             ...DashboardRouter,
             ...transactionRouter,
+            ...chatbotRouter,
             ...protectedUserRoutes,
 
             {

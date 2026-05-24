@@ -1,5 +1,5 @@
 import MAIN_ROUTES from "@/routes/path";
-import { CreditCardIcon, LayoutDashboardIcon, SendIcon, TrendingUpIcon, WalletIcon } from "lucide-react";
+import { CreditCardIcon, LayoutDashboardIcon, SendIcon, TrendingUpIcon, WalletIcon, Sparkles } from "lucide-react";
 
 const getNavItems = (t) => [
     {
@@ -31,6 +31,12 @@ const getNavItems = (t) => [
       title: t('navbar:investments'),
       url: MAIN_ROUTES.INVESTMENT,
       icon: TrendingUpIcon,
+    },
+    {
+      key: 'chatbot',
+      title: t('navbar:assistant'),
+      url: MAIN_ROUTES.CHATBOT_UPLOAD,
+      icon: Sparkles,
     },
 ];
 

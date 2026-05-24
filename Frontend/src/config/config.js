@@ -1,5 +1,6 @@
 export const apiConfig = {
     API_URL: import.meta.env.VITE_API_URL,
+    CHATBOT_API_URL: import.meta.env.VITE_CHATBOT_API_URL,
 };
 
 export const reverbConfig = {

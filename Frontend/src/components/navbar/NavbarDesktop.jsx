@@ -38,7 +38,7 @@ const NavbarDesktop = () => {
         </nav>
 
         <div className="flex items-center gap-4">
-          <VisibilityWrapper showButton />
+          {/* <VisibilityWrapper showButton /> */}
           <ModeToggle />
           <LanguageSwitcher />
           <UserMenu />

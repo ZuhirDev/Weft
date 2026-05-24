@@ -6,6 +6,7 @@ const MAIN_ROUTES = {
     TRANSACTION: '/transaction',
     INVESTMENT: '/investment',
     NOTIFICATIONS: '/notification',
+    CHATBOT_UPLOAD: '/chatbot/upload',
 }
 
 export default MAIN_ROUTES;
