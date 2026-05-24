@@ -7,6 +7,7 @@ import { AccountProvider } from '@account/context/AccountContext';
 import { ThemeProvider } from '@/components/theme-provider';
 import { CardProvider } from '@card/context/CardContext';
 import { TransactionProvider } from '@transaction/context/TransactionContext';
+import { BlockChainProvider } from '@blockchain/context/BlockChainContext';
 import { VisibilityProvider } from '@/context/VisibilityContext';
 import App from '@/App.jsx';
 import '@/utils/i18n';
@@ -21,7 +22,9 @@ createRoot(document.getElementById('root')).render(
                 <TransactionProvider>
                   <CardProvider>
                     <AccountProvider >
-                      <App />   
+                      <BlockChainProvider>
+                        <App />   
+                      </BlockChainProvider>
                     </AccountProvider>
                   </CardProvider>
                 </TransactionProvider>

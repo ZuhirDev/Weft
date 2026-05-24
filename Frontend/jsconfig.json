@@ -11,6 +11,7 @@
       "@transaction/*": ["./src/modules/transaction/*"],
       "@dashboard/*": ["./src/modules/dashboard/*"],
       "@landing/*": ["./src/modules/landing/*"],
+      "@blockchain/*": ["./src/modules/blockchain/*"],
       "@chatbot/*": ["./src/modules/chatbot/*"],
     }
   }
