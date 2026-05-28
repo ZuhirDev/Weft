@@ -10,6 +10,7 @@ services:
       - db
     networks:
       - weft-network
+      - shared-ml-network
   reverb:
     build: 
       context: ${LARAVEL}
@@ -63,6 +64,8 @@ services:
 networks: 
   weft-network:
     driver: bridge
+  shared-ml-network:
+    external: true
 volumes:
   db_data:
     driver: local

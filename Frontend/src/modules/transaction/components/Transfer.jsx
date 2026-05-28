@@ -10,6 +10,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTransaction } from '../context/TransactionContext';
 import { useAccount } from '@/modules/account/context/AccountContext';
+import { toast } from 'sonner';
 
 const Transfer = () => {
 
@@ -47,6 +48,7 @@ const Transfer = () => {
             }
         } catch (error) {
             console.log("Error", error)
+            toast.error(error.response?.data?.message || "An error occurred during the transfer.");
         }finally{
             reset();
             close();

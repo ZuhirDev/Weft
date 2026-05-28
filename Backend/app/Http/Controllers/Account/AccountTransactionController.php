@@ -12,6 +12,7 @@ use App\Models\Customer;
 use App\Models\Transaction;
 use App\Services\AccountService;
 use App\Services\AccountTransactionService;
+use App\Services\FraudDetectionService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -22,14 +23,16 @@ class AccountTransactionController extends Controller
     protected $user;
     protected $accountService;
     protected $accountTransaction;
+    protected $fraudService;
 
-    public function __construct(AccountTransactionService $accountTransaction, AccountService $accountService)
+    public function __construct(AccountTransactionService $accountTransaction, AccountService $accountService, FraudDetectionService $fraudService)
     {
         $this->user = JWTAuth::user();
         $customer = Customer::where('user_id', $this->user->id)->first();
         $this->user = $customer;
         $this->accountTransaction = $accountTransaction;
         $this->accountService = $accountService;
+        $this->fraudService = $fraudService;
     }
 
     public function deposit(AccountTransactionRequest $request)
@@ -61,7 +64,21 @@ class AccountTransactionController extends Controller
         $balance = $this->accountTransaction->hasEnoughBalance($account, $request->amount);
         
         if (!$balance) return response()->json(['message' => __('transaction/messages.insufficient_funds')], 400);
-        
+
+        $isFraud = $this->fraudService->isFraudulent([
+            'nameOrig' => $account->iban,
+            'nameDest' => 'C38997010',
+            'amount' => $request->amount,
+            'old_balance_orig' => $account->balance,
+            'new_balance_orig' => $account->balance - $request->amount,
+            'type' => 'CASH_OUT',
+        ]);
+
+        if ($isFraud) {
+            return response()->json([
+                'message' => 'Transacción rechazada por actividad sospechosa.' 
+            ], 403);
+        }        
         $transaction = $this->accountTransaction->withdrawalFunds($account, $request->validated());
 
         $message = $this->accountTransaction->transactionMessage($account, $transaction);
@@ -89,6 +106,23 @@ class AccountTransactionController extends Controller
         $balance = $this->accountTransaction->hasEnoughBalance($origin, $request->amount);
         
         if (!$balance) return response()->json(['message' => __('transaction/messages.insufficient_funds')], 400);
+        
+        $isFraud = $this->fraudService->isFraudulent([
+            'nameOrig' => $origin->iban,
+            'nameDest' => $destination->iban,
+            'amount' => $request->amount,
+            'old_balance_orig' => $origin->balance,
+            'new_balance_orig' => $origin->balance - $request->amount,
+            'old_balance_dest' => $destination->balance,
+            'new_balance_dest' => $destination->balance + $request->amount,
+            'type' => 'TRANSFER',
+        ]);
+
+        if ($isFraud) {
+            return response()->json([
+                'message' => 'Transacción rechazada por actividad sospechosa.'
+            ], 403);
+        }
         
         $transaction = $this->accountTransaction->transferFunds($origin, $destination, $request->validated());
 
